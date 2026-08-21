@@ -22,9 +22,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files. `.env.example` is tracked deliberately — it is the only record
+# of what a deployment needs, and `vercel link` writes a real OIDC token into
+# `.env.local`, so the negation has to be explicit rather than assumed.
 .env
 .env*.local
+.env*
+!.env.example
 
 # vercel
 .vercel
