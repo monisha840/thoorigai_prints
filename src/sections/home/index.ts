@@ -4,6 +4,7 @@ export { FeaturedProducts } from './featured-products';
 export { ProductShowcase } from './product-showcase';
 export { PortfolioPreview } from './portfolio-preview';
 export { WhyUs } from './why-us';
+export { Technology } from './technology';
 export { ProcessTimeline } from './process-timeline';
 export { Testimonials } from './testimonials';
 export { HomeCta } from './home-cta';

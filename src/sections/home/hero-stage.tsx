@@ -1,10 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Component, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { MouseParallaxLayer } from '@/components/motion';
 import { lazyScene } from '@/components/three/lazy-scene';
+import { SceneBoundary } from '@/components/three/scene-boundary';
 import { resolveTier, tierAllows3D } from '@/lib/capability';
 import { hero } from '@/content/home';
 import { mediaFrame } from './shared';
@@ -41,38 +42,6 @@ const FoldCanvas = lazyScene<{ onReady?: () => void }>(
   () => import('@/components/three/fold-sequence-canvas'),
   { placeholderClassName: 'opacity-0' },
 );
-
-/**
- * Keeps a 3D failure invisible.
- *
- * A chunk that 404s behind a stale service worker, or a GL context lost when
- * the OS reclaims the GPU, must not take the hero down with it. On any error
- * this renders nothing and the poster underneath simply stays.
- */
-class SceneBoundary extends Component<
-  { children: ReactNode; onError: () => void },
-  { failed: boolean }
-> {
-  state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  componentDidCatch(error: unknown) {
-    // Bring the photograph back. Without this a scene that dies *after* the
-    // cross-fade leaves an empty frame — the one outcome §10.5 rule 8 forbids.
-    this.props.onError();
-    // Analytics is not wired yet; §10.4 rule 7 asks for `3d_load_failed` here.
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[hero] 3D scene failed, keeping poster', error);
-    }
-  }
-
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
-}
 
 export function HeroStage() {
   const frameRef = useRef<HTMLDivElement>(null);

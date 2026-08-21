@@ -364,6 +364,114 @@ export const whyUs = {
 } as const;
 
 /* -------------------------------------------------------------------------
+ * Technology we possess
+ *
+ * The live homepage carries this heading over a single image and nothing else
+ * — no copy, no specification, no link. `docs/redesign-report.md` line 47 is
+ * explicit that the fix is to *fill* the section rather than delete it, so the
+ * heading is retained verbatim and everything under it is new.
+ *
+ * PROVENANCE (§8.7): `digital-printer.webp` is byte-identical to the live
+ * site's own `Printer.webp`, published by the studio under this same heading,
+ * and the studio has confirmed it runs the press. `docs/image-usage-guide.md`
+ * line 408 is the reason that confirmation was needed before the brand could
+ * be named here. `canon-press.webp` is the same machine with a worse mask and
+ * stays unused — line 119 of that guide: one or the other, never both.
+ *
+ * What is deliberately absent: a model number and a sheets-per-hour figure.
+ * Neither appears anywhere in `docs/content-audit.md`, and a specification is
+ * the last place on a print site to guess — see the `processSteps` note below
+ * on the turnaround figure, which is the same discipline applied twice.
+ * ---------------------------------------------------------------------- */
+
+export interface PressModule {
+  /** Reading order, which is the direction paper travels: right to left. */
+  n: string;
+  /** Percentage across the image box. See `modules` below for the geometry. */
+  x: number;
+  /** Percentage down the image box. */
+  y: number;
+  label: string;
+  body: string;
+}
+
+export const technology = {
+  eyebrow: 'On the floor',
+  /** The live H2, split so the first word can take the foil treatment. */
+  heading: { foil: 'Technology', rest: 'we possess' },
+  standfirst:
+    'A Canon production press, run in-house in Royapettah. Your file is proofed, printed and finished without the job leaving the building — which is why a correction costs a conversation rather than a week.',
+  image: {
+    src: '/images/about/digital-printer.webp',
+    alt: 'The studio’s Canon production press: paper decks at the right, print engine at the centre, finishing and stacking modules at the left',
+    width: 1000,
+    height: 750,
+  } satisfies HomeImage,
+
+  /**
+   * The four modules, numbered **right to left** — the direction a sheet
+   * actually travels through the machine, and the direction the paper-path
+   * scene draws in.
+   *
+   * `x`/`y` are percentages of the image box, read off the *rendered* plate
+   * rather than off the cut-out's raw subject bounds (52,110 → 963,669 of a
+   * 1000×750 canvas). The bounds give the machine's extent; they do not give
+   * the centre of a module inside it, and four markers derived from them landed
+   * one panel to the left of everything they were naming.
+   *
+   * Each one now sits on a module the eye can verify: the letters D, B and F
+   * are physically printed on the machine in the photograph.
+   *
+   * Every claim below is already published elsewhere on this site. Micro text
+   * and variable data are the live homepage's own rotating headline; the proof
+   * approval is `processSteps`; the stock list is the synthetic-print and
+   * paper range in the catalogue.
+   */
+  modules: [
+    {
+      n: '01',
+      x: 84,
+      y: 57,
+      label: 'Paper decks',
+      body: 'Coated, uncoated and synthetic stock, fed from multiple decks in one run.',
+    },
+    {
+      n: '02',
+      x: 40,
+      y: 47,
+      label: 'Print engine',
+      body: 'Digital multicolour, micro text and variable data on the same pass.',
+    },
+    {
+      n: '03',
+      x: 64,
+      y: 22,
+      label: 'Press console',
+      body: 'Your proof is approved here before the run starts. Nothing prints unseen.',
+    },
+    {
+      n: '04',
+      x: 17,
+      y: 54,
+      label: 'Finishing',
+      body: 'Trimmed, folded and stacked in line, then bound in the same building.',
+    },
+  ] satisfies readonly PressModule[],
+
+  /**
+   * The spec rail — `docs/design-system.md` line 658: mono figures, hairline
+   * row rules, no vertical rules. Four rows, each a fact stated elsewhere:
+   * the first two are `pillars[0].covers`, the last two are §0.3.
+   */
+  specs: [
+    { label: 'Processes', value: 'Offset + digital' },
+    { label: 'Colour', value: 'Multicolour & B/W' },
+    { label: 'Binding', value: '9 formats' },
+    { label: 'Catalogue', value: '43 products' },
+  ],
+} as const;
+
+/* -------------------------------------------------------------------------
  * Process
  *
  * The live site has a "Technology We Possess" heading with nothing beneath it

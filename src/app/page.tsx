@@ -6,6 +6,7 @@ import { HomeCta } from '@/sections/home/home-cta';
 import { PortfolioPreview } from '@/sections/home/portfolio-preview';
 import { ProcessTimeline } from '@/sections/home/process-timeline';
 import { ServicesPreview } from '@/sections/home/services-preview';
+import { Technology } from '@/sections/home/technology';
 import { Testimonials } from '@/sections/home/testimonials';
 import { WhyUs } from '@/sections/home/why-us';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -55,6 +56,13 @@ export default function HomePage() {
 
       <PortfolioPreview />
       <WhyUs />
+
+      {/* The machine the "leading technology" commitment above rests on, and
+          the head of the page's single dark run — this band and the timeline
+          below it read as one dark chapter rather than two cuts (§13.1). It
+          fills the live site's longest-standing empty heading. */}
+      <Technology />
+
       <ProcessTimeline />
       <Testimonials />
       <HomeCta />
