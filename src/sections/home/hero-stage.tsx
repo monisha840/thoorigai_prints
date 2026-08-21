@@ -7,39 +7,51 @@ import { MouseParallaxLayer } from '@/components/motion';
 import { lazyScene } from '@/components/three/lazy-scene';
 import { SceneBoundary } from '@/components/three/scene-boundary';
 import { resolveTier, tierAllows3D } from '@/lib/capability';
+import { useBreakpoint, useMediaQuery } from '@/hooks/use-media-query';
+import { useReducedMotion } from '@/providers/motion-provider';
 import { hero } from '@/content/home';
-import { mediaFrame } from './shared';
+import { HeroMobile } from './hero-mobile';
+import { cn } from '@/lib/utils';
 
 /**
- * The hero's media slot: photograph first, fold sequence second.
+ * The hero's media slot: photograph first, story second.
  *
  * This is the loading contract from `MASTER_PROJECT_PLAN.md` §10.4, and the
  * order matters more than anything else in this file.
  *
  * 1. The photograph renders synchronously, always, with `priority`. **It is the
- *    LCP element**, and it is still the LCP element on every device — the
- *    canvas is never in the critical path.
+ *    LCP element** on every device — the canvas is never in the critical path.
  * 2. The frame reserves an explicit aspect ratio at all three breakpoints, so
- *    CLS is zero whether or not the canvas ever arrives.
- * 3. Tier C stops here permanently and never fetches the 3D chunk.
- * 4. Tiers A and B wait for the poster to finish loading, then for the browser
- *    to go idle, before importing anything.
- * 5. The two layers cross-fade once the canvas has its first frame up.
- * 6. Any failure fades the photograph back in and says nothing.
+ *    CLS is zero whether or not anything else ever arrives.
+ * 3. **Below `lg` the answer is `HeroMobile` and the story stops there.** No
+ *    tier probe, no dynamic import, no `three`.
+ * 4. At `lg` and above, Tier C stops at the photograph permanently.
+ * 5. Tiers A and B wait for the poster to decode, then for the browser to go
+ *    idle, before importing anything.
+ * 6. The two layers cross-fade once the canvas has its first frame up.
+ * 7. Any failure fades the photograph back in and says nothing.
  *
- * Step 5 is a genuine cross-fade, not an overlay. The canvas has a transparent
- * clear colour, so keeping the photograph beneath it would put a folding sheet
- * of paper on top of a photograph of a bound book — two subjects competing in
- * one frame, both unreadable. The scene resolves onto the paper ground instead.
+ * Step 3 is new and is the point of this rewrite. The gate used to be the tier
+ * check alone, and a modern phone passes every clause of it — so the live site
+ * mounted the full desktop scene at a 390px viewport. A breakpoint is the right
+ * question here because the answer is not "can this device cope" but "is this
+ * the right *experience* for this screen", and on a phone it is not.
  *
- * The poster is *not* a placeholder to be discarded. A visitor on a cheap phone
- * or a slow connection sees a finished photograph of real work, which is a
- * perfectly good hero — §10.5 rule 8.
+ * ## The frame width, which is load-bearing
+ *
+ * The frame is `w-auto`, not `w-full`, and that is a fix rather than a style.
+ * A block with an explicit `width: 100%` does not expand from negative
+ * horizontal margins — `margin-left: -20px` shifts it left and
+ * `margin-right: -20px` only grants overflow room. With `w-full` the "full
+ * bleed" measured 350px wide inside a 390px viewport: flush to the left edge
+ * with a 40px gap on the right. `cn` runs tailwind-merge, so `w-auto` genuinely
+ * replaces the `w-full` in `mediaFrame` rather than depending on class order,
+ * which does not decide CSS precedence.
  */
 
 /** Invisible while the chunk downloads: §10.4 rule 7 — the poster is the loading state. */
-const FoldCanvas = lazyScene<{ onReady?: () => void }>(
-  () => import('@/components/three/fold-sequence-canvas'),
+const StoryCanvas = lazyScene<{ onReady?: () => void; still?: boolean; parallax?: boolean }>(
+  () => import('@/components/three/press-story-canvas'),
   { placeholderClassName: 'opacity-0' },
 );
 
@@ -49,17 +61,25 @@ export function HeroStage() {
   const [mount3D, setMount3D] = useState(false);
   const [faded, setFaded] = useState(false);
 
+  const isDesktop = useBreakpoint('lg');
+  const finePointer = useMediaQuery('(pointer: fine)');
+  const reduced = useReducedMotion();
+
   /**
    * Decide whether the canvas may load at all, then when.
    *
-   * The gate is deliberately conservative about *when*. The hero is above the
-   * fold, so intersection is true on arrival and would gate nothing on its own
-   * — the real deferral is waiting for the poster to decode and then for an
+   * `useBreakpoint` returns `false` until it has measured, which is the right
+   * way round: the first client render is the mobile branch for everybody, so
+   * nothing starts and then has to be taken away a frame later.
+   *
+   * The deferral is deliberately conservative about *when*. The hero is above
+   * the fold, so intersection is true on arrival and would gate nothing on its
+   * own — the real deferral is waiting for the poster to decode and then for an
    * idle callback. That is what keeps a 240kb `three` download from competing
-   * with the image LCP is actually measuring, which is the mobile concern §10.2
-   * raises when it calls for the hero to stay quiet.
+   * with the image LCP is actually measuring.
    */
   useEffect(() => {
+    if (!isDesktop) return;
     if (!posterLoaded) return;
     if (!tierAllows3D(resolveTier())) return;
 
@@ -75,10 +95,6 @@ export function HeroStage() {
         const start = () => setMount3D(true);
         // `requestIdleCallback` is still unavailable on Safari < 17, so the
         // timeout is a real fallback rather than belt-and-braces.
-        // Tested as a function rather than with `'requestIdleCallback' in
-        // window`: lib.dom declares the method as always present, so the `in`
-        // guard narrows the else branch to `never` and `window.setTimeout`
-        // stops type-checking.
         idleHandle =
           typeof window.requestIdleCallback === 'function'
             ? window.requestIdleCallback(start, { timeout: 2000 })
@@ -98,18 +114,31 @@ export function HeroStage() {
         window.clearTimeout(idleHandle);
       }
     };
-  }, [posterLoaded]);
+  }, [isDesktop, posterLoaded]);
+
+  /*
+    Below `lg` the slot is the mobile story and nothing else — no frame, no
+    poster, no observer. Rendering the photograph underneath it as well would
+    download a second large image to sit invisibly behind a composition that
+    already includes it.
+  */
+  if (!isDesktop) {
+    return <HeroMobile className="-mx-1 sm:mx-0" />;
+  }
 
   return (
     <div
       ref={frameRef}
       /*
         The ratio and the gutter bleed are load-bearing. The frame declares an
-        explicit aspect at every breakpoint so nothing shifts, and the negative
-        margins let the image bleed through the gutter below `lg`. Changing
-        either reintroduces CLS and breaks the mobile gutter.
+        explicit aspect at every breakpoint so nothing shifts, and `w-auto` is
+        what lets the negative margins actually bleed rather than merely shift
+        — see the note at the top of this file.
       */
-      className={`${mediaFrame} relative -mx-5 aspect-[4/5] sm:-mx-8 sm:aspect-[3/2] lg:mx-0 lg:aspect-[4/5]`}
+      className={cn(
+        'relative w-auto overflow-hidden rounded-none bg-paper-300 [&_img]:object-cover',
+        '-mx-5 aspect-[4/5] sm:-mx-8 sm:aspect-[3/2] lg:mx-0 lg:w-full lg:aspect-[4/5]',
+      )}
     >
       {/*
         The frame stays where the layout put it and the photograph moves inside
@@ -118,16 +147,17 @@ export function HeroStage() {
         exposes the background.
 
         It fades as the canvas arrives. §10.4 rule 6 calls for a cross-fade, and
-        it has to be a real one: the canvas is transparent, so leaving the
-        photograph underneath puts a folding sheet of paper on top of a
-        photograph of a book and makes both unreadable. The scene resolves onto
-        the paper ground the rest of the section already uses.
+        it has to be a real one: the canvas has a transparent clear colour, so
+        leaving the photograph underneath would put a folding sheet of paper on
+        top of a photograph of a bound book and make both unreadable. The scene
+        resolves onto the paper ground the section already uses.
       */}
       <MouseParallaxLayer
         depth={0.5}
-        className={`motion-crossfade absolute inset-0 scale-[1.06] ${
-          faded ? 'opacity-0' : 'opacity-100'
-        }`}
+        className={cn(
+          'motion-crossfade absolute inset-0 scale-[1.06]',
+          faded ? 'opacity-0' : 'opacity-100',
+        )}
       >
         <Image
           src={hero.image.src}
@@ -142,22 +172,24 @@ export function HeroStage() {
       </MouseParallaxLayer>
 
       {/*
-        The canvas sits outside the parallax layer deliberately. `FoldRig` does
-        its own damped pointer tilt in 3D, and stacking a DOM translate on top
-        of it doubles the deflection into something that reads as drift rather
-        than as depth.
+        The canvas sits outside the parallax layer deliberately. The rig does its
+        own damped pointer lean in 3D, and stacking a DOM translate on top of it
+        doubles the deflection into something that reads as drift rather than as
+        depth.
       */}
       {mount3D ? (
         <SceneBoundary onError={() => setFaded(false)}>
           <div
             aria-hidden={faded ? undefined : true}
-            className={`absolute inset-0 motion-crossfade ${
-              faded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={cn('absolute inset-0 motion-crossfade', faded ? 'opacity-100' : 'opacity-0')}
           >
             {/* One frame after the canvas mounts, so the fade starts from a
                 painted image rather than from an empty context. */}
-            <FoldCanvas onReady={() => requestAnimationFrame(() => setFaded(true))} />
+            <StoryCanvas
+              still={reduced}
+              parallax={finePointer && !reduced}
+              onReady={() => requestAnimationFrame(() => setFaded(true))}
+            />
           </div>
         </SceneBoundary>
       ) : null}

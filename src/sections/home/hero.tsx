@@ -35,7 +35,7 @@ import { Eyebrow, editorialButton } from './shared';
  * The scene earns its place under §10.1 ("every scene must answer a question a
  * buyer actually has") by showing what this press turns a flat sheet into —
  * brochure, business card, packaging box — which is the one thing a photograph
- * of a finished box cannot show. See `src/three/fold-sequence.ts`.
+ * of a finished box cannot show. See `src/three/press-story.ts`.
  *
  * `Board-on-board-hard.jpg` is the one asset in the library with real zoom
  * headroom (2447², §8.3), which is why it can carry a hero at all. Nine of the

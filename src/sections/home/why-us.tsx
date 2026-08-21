@@ -4,6 +4,7 @@ import { Section } from '@/components/layout/section';
 import { FadeIn, FadeUp, Parallax, Stagger, StaggerItem } from '@/components/motion';
 import { whyUs } from '@/content/home';
 import { ArrowLink, Eyebrow, band, mediaFrame } from './shared';
+import { cn } from '@/lib/utils';
 
 /**
  * Why choose us — MASTER_PROJECT_PLAN.md §6.2 section 8, "Commitments".
@@ -39,7 +40,22 @@ export function WhyUs() {
         */}
         <FadeIn className="order-1 lg:order-none lg:col-span-6">
           <Parallax offset={16}>
-            <div className={`${mediaFrame} -mx-5 aspect-[3/2] sm:-mx-8 lg:mx-0 lg:aspect-[4/3]`}>
+            {/*
+              `w-auto` is a fix, not a style. `mediaFrame` carries `w-full`, and
+              a block with an explicit `width: 100%` does not expand from
+              negative horizontal margins — the left margin shifts it and the
+              right one only grants overflow room. This frame measured 350px
+              inside a 390px viewport: flush left, 40px gap right. `cn` runs
+              tailwind-merge so `w-auto` genuinely replaces `w-full`; relying on
+              class order would not, because attribute order does not decide CSS
+              precedence.
+            */}
+            <div
+              className={cn(
+                mediaFrame,
+                'w-auto -mx-5 aspect-[3/2] sm:-mx-8 lg:mx-0 lg:w-full lg:aspect-[4/3]',
+              )}
+            >
               <Image
                 src={whyUs.image.src}
                 alt={whyUs.image.alt}
