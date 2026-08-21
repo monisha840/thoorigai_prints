@@ -40,6 +40,33 @@ export function FadeIn({ variants, ...props }: MotionBlockProps) {
  * `data-motion="reveal"` so the reduced-motion rule in `globals.css` can drop
  * the clip: `clipPath` is not a Framer positional key, so `reducedMotion` alone
  * would leave the wipe running.
+ *
+ * ## `className="block"` on the inner element is load-bearing
+ *
+ * It is the fix for a bug that hid a word of the homepage H1 on every render
+ * since this component was written.
+ *
+ * `MotionBlock` renders `as="span"`, and a bare `<span>` is a non-replaced
+ * **inline** box. Two CSS rules follow from that, and both bite:
+ *
+ * 1. **`clip-path` on a fragmented inline box resolves against the first
+ *    fragment's border box.** The moment the text inside wraps — which the hero
+ *    headline does at every breakpoint, because its grid column is ~624px
+ *    against ~800px of Fraunces — `inset(0% 0% 0% 0%)` is measured against line
+ *    one, and every glyph on line two is clipped away permanently. Not for the
+ *    duration of the animation: permanently. The outer wrapper is `block` and
+ *    tall enough for both lines, so the space stays reserved and the result
+ *    reads as an inexplicable gap in the headline.
+ * 2. **`transform` does not apply to non-replaced inline elements at all**, so
+ *    `revealLine`'s 16px rise has never once run. The `overflow-hidden` and the
+ *    `pb`/`-mb` pair on the wrapper exist to mask exactly that rise, and until
+ *    now have been guarding nothing.
+ *
+ * Making the animated element `block` fixes both: the clip resolves against the
+ * whole block box including wrapped lines, and the rise starts working.
+ *
+ * It cannot break a call site. `Reveal` is display type only, always a direct
+ * child of a block-level heading, and is never used inline within a sentence.
  */
 export function Reveal({ className, variants, ...props }: MotionBlockProps) {
   return (
@@ -47,6 +74,7 @@ export function Reveal({ className, variants, ...props }: MotionBlockProps) {
       <MotionBlock
         variants={variants ?? revealLine}
         as="span"
+        className="block"
         data-motion="reveal"
         {...props}
       />

@@ -75,7 +75,16 @@ export function Hero() {
               animates on load (§9.2, "nothing animates on page load except the
               hero"). Never character by character.
             */}
-            <h1 className="mt-6 max-w-[20ch] font-display text-display-xl font-normal text-ink-800">
+            {/*
+              No `max-w` here. It carried `max-w-[20ch]` for most of this file's
+              life, which never once applied: `ch` is the advance of "0" in
+              Fraunces, and 20 of them at the display-xl clamp's 92px ceiling is
+              roughly 1050px against a grid column of about 624px. The column
+              was always the binding constraint. Its only effect was to look
+              like the thing controlling the line breaks, which sent the first
+              investigation of the missing word in the wrong direction.
+            */}
+            <h1 className="mt-6 font-display text-display-xl font-normal text-ink-800">
               {hero.headline.map((line, i) => (
                 <Reveal key={line} immediate delay={i * 0.1}>
                   {line}

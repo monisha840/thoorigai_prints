@@ -73,7 +73,23 @@ export const fadeIn: Variants = {
 export const revealLine: Variants = {
   hidden: { clipPath: 'inset(100% 0% 0% 0%)', opacity: 0, y: distance.base },
   visible: (delay: MotionDelay = 0) => ({
-    clipPath: 'inset(0% 0% 0% 0%)',
+    /*
+      Settles a couple of percent *outside* the box on three sides rather than
+      flush at zero.
+
+      The clip stays live after the animation finishes — it is a resting style,
+      not a transition — so anything that changes the element's box afterwards
+      is measured against a clip that was computed before it. A late webfont
+      swap is the common case: both faces load `display: swap`, and the reflow
+      lands well after this has settled. Flush at `0%`, a line that grows even a
+      fraction of a pixel gets its descenders shaved; with slack, it cannot.
+
+      The top edge stays at `0%` because it is the edge the wipe travels along,
+      and the wrapper's `overflow-hidden` clips the slack back off, so none of
+      it is visible. `none` would be the tidier resting value, but Framer cannot
+      interpolate a length to a keyword — the animation would snap.
+    */
+    clipPath: 'inset(0% -2% -2% -2%)',
     opacity: 1,
     y: 0,
     transition: { ...reveal, delay },
