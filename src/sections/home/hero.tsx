@@ -26,16 +26,12 @@ import { Eyebrow, editorialButton } from './shared';
  * arrives; the photograph is `priority` and is the LCP element (§2.8 — LCP
  * under 2.0s on throttled 4G, and WebGL is never in the critical path).
  *
- * The media slot is `HeroStage`, which owns the photograph and the fold
- * sequence layered over it. The order there is the one this comment has always
- * asked for: the photograph is still `priority`, still the LCP element, and the
- * canvas layers on top of it rather than replacing it. Tier C never loads
- * WebGL at all and keeps the photograph permanently.
- *
- * The scene earns its place under §10.1 ("every scene must answer a question a
- * buyer actually has") by showing what this press turns a flat sheet into —
- * brochure, business card, packaging box — which is the one thing a photograph
- * of a finished box cannot show. See `src/three/press-story.ts`.
+ * The media slot is `HeroStage`: one photograph of real finished work, on a
+ * matte, with a small pointer and scroll drift. It carried a WebGL sequence
+ * narrating the production process until that was removed — the scene had no
+ * words, so it could not explain itself, and `ProcessTimeline` three sections
+ * below already tells the same five stages with numbers and captions. The hero
+ * shows the work; the page explains the process.
  *
  * `Board-on-board-hard.jpg` is the one asset in the library with real zoom
  * headroom (2447², §8.3), which is why it can carry a hero at all. Nine of the
