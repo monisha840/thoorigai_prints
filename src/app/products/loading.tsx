@@ -1,5 +1,5 @@
 import { PageSkeleton } from '@/components/ui/skeleton';
 
 export default function Loading() {
-  return <PageSkeleton cards={9} />;
+  return <PageSkeleton variant="showcase" cards={3} />;
 }

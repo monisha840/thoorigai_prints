@@ -83,29 +83,49 @@ export function PortfolioCta() {
         </div>
 
         {/* ------------------------------------------- Route a job takes */}
+        {/*
+          A triptych, not a three-up grid. The three frames are a *sequence* —
+          the route a job takes across the floor — and three equal tiles in a
+          row is the one layout that says the opposite: three interchangeable
+          things, order immaterial. Unequal spans and a stepped baseline give
+          the row a direction to be read in, which is the whole point of it.
+        */}
         <Stagger
           as="ol"
-          className="mt-20 grid gap-6 border-t border-paper-100/12 pt-12 sm:grid-cols-3"
+          className="mt-20 grid grid-cols-1 items-start gap-x-8 gap-y-12 border-t border-paper-100/12 pt-12 sm:grid-cols-12"
         >
-          {floorFrames.map((frame, index) => (
-            <StaggerItem key={frame.id} as="li" className="group">
-              <PrintPlate
-                image={frame.image}
-                ratio="landscape"
-                sizes="(min-width: 640px) 30vw, 92vw"
-                tone="ink"
-              />
-              <div className="mt-4 flex items-baseline gap-3">
-                <span className="font-mono text-caption tabular-nums text-gold-300/70">
-                  {pad(index + 1)}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="text-body-sm font-medium text-paper-100">{frame.caption}</h3>
-                  <p className="mt-0.5 text-caption text-paper-100/50">{frame.detail}</p>
+          {floorFrames.map((frame, index) => {
+            const step = [
+              { span: 'sm:col-span-5', ratio: 'landscape' as const, drop: '', width: '30vw' },
+              { span: 'sm:col-span-4', ratio: 'portrait' as const, drop: 'sm:mt-16', width: '24vw' },
+              { span: 'sm:col-span-3', ratio: 'square' as const, drop: 'sm:mt-8', width: '18vw' },
+            ][index % 3];
+
+            return (
+              <StaggerItem
+                key={frame.id}
+                as="li"
+                className={`group ${step.span} ${step.drop}`}
+              >
+                <PrintPlate
+                  image={frame.image}
+                  ratio={step.ratio}
+                  frame="bleed"
+                  sizes={`(min-width: 640px) ${step.width}, 92vw`}
+                  tone="ink"
+                />
+                <div className="mt-4 flex items-baseline gap-3">
+                  <span className="font-mono text-caption tabular-nums text-gold-300/70">
+                    {pad(index + 1)}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-body-sm font-medium text-paper-100">{frame.caption}</h3>
+                    <p className="mt-0.5 text-caption text-paper-100/50">{frame.detail}</p>
+                  </div>
                 </div>
-              </div>
-            </StaggerItem>
-          ))}
+              </StaggerItem>
+            );
+          })}
         </Stagger>
       </Container>
     </Section>

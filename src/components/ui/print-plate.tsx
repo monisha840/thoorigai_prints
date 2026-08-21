@@ -37,6 +37,20 @@ const ratioClass: Record<PlateRatio, string> = {
 
 export type PlateTone = 'paper' | 'ink';
 
+/**
+ * How the photograph is mounted.
+ *
+ * `plate` is the original: a hairline edge, a radius and a shadow — a print
+ * mounted on a board, right for a tile in a set.
+ *
+ * `bleed` removes all three. It is for the showcase rows, where the photograph
+ * runs past the container gutter and is the full width of its column: an edge
+ * and a corner radius on an image that large stop reading as a mount and start
+ * reading as a card, which is the whole thing those sections exist to avoid.
+ * The matte, the seating gradient and the hover push-in all survive.
+ */
+export type PlateFrame = 'plate' | 'bleed';
+
 export interface PrintPlateProps {
   image: WorkImage;
   ratio?: PlateRatio;
@@ -48,6 +62,8 @@ export interface PrintPlateProps {
   /** Above the fold only. More than one or two defeats the purpose. */
   priority?: boolean;
   tone?: PlateTone;
+  /** Mount style. `bleed` drops the edge, radius and shadow — see `PlateFrame`. */
+  frame?: PlateFrame;
   /** Crop-mark corners, as on a press sheet. Off for small tiles. */
   marks?: boolean;
   /** Slot rendered over the image — captions, indices, badges. */
@@ -64,6 +80,7 @@ export function PrintPlate({
   sizes = '100vw',
   priority = false,
   tone = 'paper',
+  frame = 'plate',
   marks = false,
   overlay,
   still = false,
@@ -71,6 +88,7 @@ export function PrintPlate({
   imageClassName,
 }: PrintPlateProps) {
   const isInk = tone === 'ink';
+  const isBleed = frame === 'bleed';
 
   return (
     <div
@@ -82,12 +100,14 @@ export function PrintPlate({
           : undefined
       }
       className={cn(
-        'relative w-full overflow-hidden rounded-lg border',
+        'relative w-full overflow-hidden',
+        isBleed ? 'rounded-none' : 'rounded-lg border',
         ratioClass[ratio],
         // The matte doubles as the colour behind a still-decoding image, so
         // there is no white flash on a paper-toned page.
-        isInk ? 'border-paper-100/12 bg-ink-800' : 'border-paper-400 bg-paper-200',
-        !still && [
+        isInk ? 'bg-ink-800' : 'bg-paper-200',
+        !isBleed && (isInk ? 'border-paper-100/12' : 'border-paper-400'),
+        !still && !isBleed && [
           'shadow-sheet motion-lift',
           'group-hover:shadow-lifted',
         ],
@@ -120,14 +140,19 @@ export function PrintPlate({
         )}
       />
 
-      {/* An inner hairline. Reads as the edge of a mounted print. */}
-      <span
-        aria-hidden
-        className={cn(
-          'pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset',
-          isInk ? 'ring-paper-100/8' : 'ring-ink-900/6',
-        )}
-      />
+      {/* An inner hairline. Reads as the edge of a mounted print — and so has
+          no business on a bleed, where there is no mount for it to be the edge
+          of. Leaving it on would also put a rounded ring inside a square
+          corner, which is the one thing worse than either. */}
+      {isBleed ? null : (
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset',
+            isInk ? 'ring-paper-100/8' : 'ring-ink-900/6',
+          )}
+        />
+      )}
 
       {marks ? <PlateMarks tone={tone} /> : null}
 

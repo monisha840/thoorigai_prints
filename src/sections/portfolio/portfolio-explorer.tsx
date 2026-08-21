@@ -25,7 +25,16 @@ export function PortfolioExplorer() {
   );
 
   return (
-    <Section id="work" tone="paper" spacing="lg" divided>
+    <Section
+      id="work"
+      tone="paper"
+      spacing="lg"
+      divided
+      /* The showcase rows bleed their plates past the container gutter. The
+         clip is what turns that overflow into a deliberate run-off rather than
+         32px of image hanging over the page edge at `xl`. */
+      className="overflow-hidden"
+    >
       <SectionHeader>
         <Heading
           level={2}

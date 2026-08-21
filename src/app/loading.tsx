@@ -5,5 +5,5 @@ import { PageSkeleton } from '@/components/ui/skeleton';
  * placeholder is in the first byte of the streamed response.
  */
 export default function Loading() {
-  return <PageSkeleton />;
+  return <PageSkeleton variant="showcase" cards={2} />;
 }

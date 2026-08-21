@@ -1,43 +1,51 @@
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
-
 import { Section } from '@/components/layout/section';
-import { FadeUp, Parallax, Stagger, StaggerItem } from '@/components/motion';
-import { Badge } from '@/components/ui/badge';
+import { FadeIn, FadeUp, Parallax, Stagger, StaggerItem } from '@/components/motion';
 import { PrintPlate } from '@/components/ui/print-plate';
+import { IndexMark, ShowcaseLink, SpecRail, bleedEnd, bleedStart, layerPanel } from '@/components/ui/editorial';
 import { services } from '@/lib/content';
 import { cn, pad, quoteHref } from '@/lib/utils';
 
 /**
- * The service detail list.
+ * The six disciplines, one showcase each.
  *
- * Alternating editorial rows, each anchored on its own id so the footer and
- * navigation can deep-link into them (`/services#offset`). Rows reverse on
- * desktop only — on mobile the image always leads, which keeps the reading
- * order the same as the visual order.
+ * ## What changed
  *
- * ## Each row ends on an action
+ * The bones were already right — alternating editorial rows, deep-linkable, one
+ * action per row — but each row was still built like a card that had been
+ * unfolded: a plate with a border, a radius and a shadow at half the row width,
+ * a title, a sentence, and a line of pills. Three things were doing the card's
+ * job even though the card was gone.
  *
- * Every row used to close on the same sentence — "Detailed specifications,
- * stock options and lead times for this service are being written up with the
- * studio" — printed six times down one page. Two things were wrong with it. It
- * told a visitor six times over that the page was unfinished, on the page they
- * came to in order to decide; and it occupied the position where the row's call
- * to action belongs, so a reader convinced by the offset row had nowhere to go
- * from it but back to the top of the page.
+ * All three are now removed:
  *
- * The replacement is a per-service quote link. `quoteHref` carries `?ref=` and
- * `?kind=`, which `features/quote/quote-form.tsx` already reads to preselect
- * the service and seed the brief — so a visitor arriving from the binding row
- * finds the form already knowing what they are asking about. That machinery
- * existed and nothing on the services page was using it.
+ * **The plate frames.** `frame="bleed"` drops the border, the radius and the
+ * shadow, and the photograph runs past the container gutter on the outer side —
+ * so a press sheet is shown at the size a press sheet needs to be read at,
+ * rather than mounted like a postcard.
+ *
+ * **The pills.** `SpecRail` sets the same specifications as hairline rows. A
+ * chip is a shape that looks like a control and is not one; a rule with a
+ * figure against it is what a spec sheet actually looks like, and this page is
+ * read by people who read spec sheets.
+ *
+ * **The little numbered circle.** The index is now architecture — an oversized
+ * numeral behind the copy column, at the scale the row is, with the icon and
+ * the small mono figure folded into a single hairline mark.
+ *
+ * ## What did not change
+ *
+ * The alternation, the parallax direction and the per-service quote link are
+ * exactly as they were. `quoteHref` carries `?ref=` and `?kind=`, which
+ * `features/quote/quote-form.tsx` reads to preselect the service and seed the
+ * brief — so a visitor arriving from the binding row finds the form already
+ * knowing what they are asking about.
  */
 export function ServiceList() {
   return (
-    <Section tone="raised" spacing="lg" divided>
-      <Stagger stream as="ul" className="flex flex-col gap-20 md:gap-28">
+    <Section tone="raised" spacing="lg" divided className="relative isolate overflow-hidden">
+      <Stagger stream as="ul" className="flex flex-col gap-28 md:gap-36 lg:gap-48">
         {services.map((service, index) => {
-          const reversed = index % 2 === 1;
+          const flipped = index % 2 === 1;
           const Icon = service.icon;
 
           return (
@@ -47,89 +55,91 @@ export function ServiceList() {
               id={service.id}
               className="group scroll-mt-32"
             >
-              <div className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-14">
+              <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
+                {/* ----------------------------------------------- The plate */}
                 {/*
                   The plate drifts against the scroll, and the direction
                   alternates with the row — two plates travelling the same way
                   down a six-row column read as the page sliding, not as depth.
                   Twelve pixels, inert below `lg` and under reduced motion.
                 */}
-                <Parallax
-                  offset={reversed ? -12 : 12}
+                <FadeIn
                   className={cn(
-                    'lg:col-span-6',
-                    reversed ? 'lg:order-2 lg:col-start-7' : 'lg:order-1',
+                    flipped ? 'lg:order-2 lg:col-span-7 lg:col-start-6' : 'lg:order-1 lg:col-span-7',
                   )}
                 >
-                  {service.image ? (
-                    <PrintPlate
-                      image={service.image}
-                      ratio="wide"
-                      // Half the row from `lg`, full width below.
-                      sizes="(min-width: 1024px) 48vw, 92vw"
-                      tone={service.image.ground === 'dark' ? 'ink' : 'paper'}
-                      marks
-                      overlay={
-                        <span className="pointer-events-none absolute left-5 top-5 font-mono text-caption tabular-nums text-paper-100 mix-blend-difference">
-                          {pad(index + 1)}
-                        </span>
-                      }
-                    />
-                  ) : null}
-                </Parallax>
-
-                <div
-                  className={cn(
-                    'lg:col-span-5',
-                    reversed ? 'lg:order-1 lg:col-start-1' : 'lg:order-2 lg:col-start-8',
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    {Icon ? (
-                      <span className="grid size-9 place-items-center rounded-full border border-paper-400 text-gold-600">
-                        <Icon className="size-4" strokeWidth={1.5} />
-                      </span>
-                    ) : null}
-                    <span className="font-mono text-caption tabular-nums text-ink-400">
-                      {pad(index + 1)}
-                    </span>
-                  </div>
-
-                  <h2 className="mt-5 font-display text-display-sm text-ink-800">
-                    {service.title}
-                  </h2>
-                  <p className="measure mt-4 text-body-md text-ink-500">{service.summary}</p>
-
-                  {service.specs?.length ? (
-                    <ul className="mt-7 flex flex-wrap gap-2">
-                      {service.specs.map((spec) => (
-                        <li key={spec}>
-                          <Badge variant="outline">{spec}</Badge>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-
-                  {/* `?ref=` is what makes this better than a generic quote
-                      button: the form arrives knowing which service was being
-                      read, and seeds the brief with it. */}
-                  <Link
-                    href={quoteHref(service.id, 'service')}
-                    className="group/cta mt-8 inline-flex items-center gap-2 rounded-[2px] py-1.5 text-body-sm font-medium text-ink-800 motion-tint focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-500"
-                  >
-                    <span className="relative">
-                      Quote for {service.title.toLowerCase()}
+                  <Parallax offset={flipped ? -12 : 12}>
+                    <div className={cn('relative', flipped ? bleedEnd : bleedStart)}>
+                      {/* The second plane. Depth from two grounds out of
+                          register, rather than from a shadow under a box. */}
                       <span
                         aria-hidden
-                        className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-gold-500 motion-nudge group-hover/cta:scale-x-100"
+                        className={cn(
+                          layerPanel,
+                          'hidden lg:block',
+                          flipped
+                            ? '-bottom-6 -left-6 top-6 w-1/2'
+                            : '-bottom-6 -right-6 top-6 w-1/2',
+                        )}
                       />
-                    </span>
-                    <ArrowUpRight
-                      aria-hidden
-                      className="size-4 shrink-0 motion-nudge group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5"
-                      strokeWidth={1.5}
-                    />
-                  </Link>
+
+                      {service.image ? (
+                        <PrintPlate
+                          image={service.image}
+                          ratio="wide"
+                          frame="bleed"
+                          sizes="(min-width: 1280px) 62vw, (min-width: 1024px) 60vw, 100vw"
+                          tone={service.image.ground === 'dark' ? 'ink' : 'paper'}
+                          marks
+                        />
+                      ) : null}
+                    </div>
+                  </Parallax>
+                </FadeIn>
+
+                {/* ------------------------------------------------ The copy */}
+                <div
+                  className={cn(
+                    'relative',
+                    flipped
+                      ? 'lg:order-1 lg:col-span-4 lg:col-start-1'
+                      : 'lg:order-2 lg:col-span-4 lg:col-start-9',
+                  )}
+                >
+                  <IndexMark
+                    value={pad(index + 1)}
+                    className="absolute -top-10 left-0 text-[7rem] lg:-left-6 lg:-top-16 lg:text-[11rem]"
+                  />
+
+                  <FadeUp className="relative">
+                    {/* The icon and a bronze rule, and no second numeral: the
+                        oversized one behind this column is already the index,
+                        and printing "03" twice within 80px reads as a bug. */}
+                    <div className="flex items-center gap-3">
+                      {Icon ? (
+                        <Icon className="size-5 shrink-0 text-gold-600" strokeWidth={1.5} aria-hidden />
+                      ) : null}
+                      <span aria-hidden className="h-px w-10 bg-gold-500" />
+                    </div>
+
+                    <h2 className="mt-5 font-display text-display-sm text-ink-800">
+                      {service.title}
+                    </h2>
+
+                    <p className="measure mt-4 text-body-lg text-ink-500">{service.summary}</p>
+
+                    {service.specs?.length ? (
+                      <SpecRail items={service.specs} columns={1} className="mt-8" />
+                    ) : null}
+
+                    <ShowcaseLink
+                      href={quoteHref(service.id, 'service')}
+                      arrow="up"
+                      className="mt-8"
+                    >
+                      Quote for {service.title.toLowerCase()}
+                    </ShowcaseLink>
+                  </FadeUp>
                 </div>
               </div>
             </StaggerItem>

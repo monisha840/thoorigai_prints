@@ -93,17 +93,85 @@ export function SkeletonGrid({
 }
 
 /**
- * Whole-page placeholder for a route-level `loading.tsx`: hero block plus a
- * grid, matching the shape every page in the shell actually renders.
+ * Alternating showcase rows — the shape `/`, `/about`, `/services`, `/products`
+ * and `/portfolio` actually render since the card grids were replaced.
+ *
+ * A placeholder is a promise about what is arriving. When those pages were card
+ * grids, `SkeletonGrid` kept that promise; now it breaks it, and the visitor
+ * watches a three-column grid dissolve into an editorial spread — which reads
+ * as the page being rebuilt in front of them, the exact impression these
+ * sections were rewritten to remove.
  */
-export function PageSkeleton({ cards = 6 }: { cards?: number }) {
+export function SkeletonShowcase({
+  rows = 3,
+  className,
+}: {
+  rows?: number;
+  className?: string;
+}) {
+  return (
+    <div className={cn('flex flex-col gap-20 lg:gap-28', className)}>
+      {Array.from({ length: rows }).map((_, index) => {
+        const flipped = index % 2 === 1;
+
+        return (
+          <div key={index} className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
+            <div
+              className={cn(
+                'lg:col-span-7',
+                flipped ? 'lg:order-2 lg:col-start-6' : 'lg:order-1',
+              )}
+            >
+              <Skeleton className="aspect-[16/10] w-full rounded-none" />
+            </div>
+
+            <div
+              className={cn(
+                'flex flex-col gap-4 lg:col-span-4',
+                flipped ? 'lg:order-1 lg:col-start-1' : 'lg:order-2 lg:col-start-9',
+              )}
+            >
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-9 w-3/4" />
+              <SkeletonText lines={3} className="mt-1" />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Whole-page placeholder for a route-level `loading.tsx`: hero block, then the
+ * body in whichever shape the route actually renders.
+ *
+ * `variant` defaults to `grid` because the pages that still genuinely list
+ * things in a grid — contact, FAQ, the legal set — are the ones that never
+ * pass it. The showcase routes opt in.
+ */
+export function PageSkeleton({
+  cards = 6,
+  variant = 'grid',
+}: {
+  /** Rows in showcase mode, tiles in grid mode. Zero renders body-less. */
+  cards?: number;
+  variant?: 'grid' | 'showcase';
+}) {
   return (
     <div role="status" aria-label="Loading page" className="pb-24 pt-32 sm:pt-40">
       <div className="mx-auto w-full max-w-[88rem] px-5 sm:px-8 lg:px-12">
         <SkeletonHeading className="max-w-3xl" />
         <SkeletonText lines={2} className="mt-8 max-w-xl" />
         <div className="mt-16 h-px w-full bg-paper-400" />
-        <SkeletonGrid count={cards} className="mt-16" />
+
+        {cards > 0 ? (
+          variant === 'showcase' ? (
+            <SkeletonShowcase rows={cards} className="mt-16" />
+          ) : (
+            <SkeletonGrid count={cards} className="mt-16" />
+          )
+        ) : null}
       </div>
       <span className="sr-only">Loading</span>
     </div>
