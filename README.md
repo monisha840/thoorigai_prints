@@ -143,6 +143,60 @@ baseline; it was 372 kB without.
 - **Studio details** — `lib/site.ts`. Every phone number, address and opening hour
   on the site reads from there; nothing is hard-coded in a component.
 
+## Deploying to Vercel
+
+Nothing needs configuring beyond importing the repository. Vercel detects Next.js,
+and `next.config.ts` already carries the redirects, the apex-to-`www` host rule and
+the response headers, so those travel with the application rather than living in
+dashboard settings that nobody can review in a diff.
+
+```
+Framework          Next.js  (detected)
+Build command      next build  (default)
+Output             .next  (default)
+Install            npm install  (default)
+Node               20.x or later — pinned in package.json `engines`
+```
+
+### Environment variables
+
+| Variable | Scope | Required | Notes |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Production | No | Defaults to `https://www.thoorigaiprints.com`. Set it explicitly anyway, so the value is visible where the domain is managed. **No trailing slash.** |
+| `ENQUIRY_WEBHOOK_URL` | Production | See below | POSTs each enquiry as JSON — Zapier, Make, n8n, a CRM hook. |
+| `RESEND_API_KEY` | Production | See below | Sends each enquiry as email. |
+| `ENQUIRY_TO_EMAIL` | Production | With Resend | Falls back to `siteConfig.contact.email`. |
+| `ENQUIRY_FROM_EMAIL` | Production | With Resend | Must be on a domain verified with Resend. |
+
+Either transport works, or both. **With neither set, `/api/quote` still validates
+and logs but returns `delivered: false`**, and the form shows the visitor a
+WhatsApp and email fallback rather than claiming a success that did not happen. No
+lead is silently lost — but do not launch relying on that path.
+
+Do **not** set `VERCEL_ENV` by hand. Vercel sets it, and `robots.ts` reads it.
+
+### Domain
+
+Point `www.thoorigaiprints.com` at the deployment and add the apex as a redirect in
+Vercel's domain settings. The application redirects the apex to `www` as well, so
+the guarantee holds even if the DNS-level rule is ever removed — and every
+canonical tag, OpenGraph URL, sitemap row and JSON-LD `@id` on the site says `www`.
+
+### Preview deployments cannot be indexed
+
+`robots.ts` serves `Disallow: /` on any origin that is not the production host, and
+on any deployment where `VERCEL_ENV` is not `production`. Two independent checks,
+because a staging copy getting indexed alongside the real site is one of the most
+expensive launch mistakes there is and takes weeks to undo.
+
+### After the first deploy
+
+Submit `https://www.thoorigaiprints.com/sitemap.xml` in Google Search Console, and
+check the seventeen legacy WordPress redirects resolve against the live domain —
+they are the accumulated ranking of the site being replaced.
+
+---
+
 ## Before launch
 
 The full list, with reasoning, is section 6 of
