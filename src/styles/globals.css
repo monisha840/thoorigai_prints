@@ -1,0 +1,760 @@
+/**
+ * Thoorigai Prints — global stylesheet.
+ *
+ * Tailwind v4 is configured CSS-first: the `@theme` block below IS the theme
+ * config, and every token in it generates utilities (`bg-ink-800`, `text-gold-500`,
+ * `text-display-xl`, `xs:`, `ease-editorial`, …).
+ *
+ * The same values live in TypeScript under `src/lib/theme/` for Framer Motion,
+ * React Three Fiber and metadata. Keep the two in sync.
+ */
+
+@import "tailwindcss" source(none);
+
+/* Scan only application code — this repo also holds a scraped HTML archive. */
+@source "../../src";
+
+@theme {
+  /* ---------------------------------------------------------------------
+   * Colour tokens
+   * ------------------------------------------------------------------- */
+
+  /* Primary — deep aubergine ink (#262236) */
+  --color-ink-50: #f4f3f7;
+  --color-ink-100: #e7e5ee;
+  --color-ink-200: #c9c5d6;
+  --color-ink-300: #a9a3bc;
+  --color-ink-400: #7e7794;
+  --color-ink-500: #5a5372;
+  --color-ink-600: #443e58;
+  --color-ink-700: #332e45;
+  --color-ink-800: #262236;
+  --color-ink-900: #1b1826;
+  --color-ink-950: #100e17;
+
+  /* Secondary — press blue (#344F7C) */
+  --color-indigo-50: #f1f5fb;
+  --color-indigo-100: #e0e9f5;
+  --color-indigo-200: #c0d0e8;
+  --color-indigo-300: #93aed4;
+  --color-indigo-400: #6187b8;
+  --color-indigo-500: #44669a;
+  --color-indigo-600: #344f7c;
+  --color-indigo-700: #2c4165;
+  --color-indigo-800: #263553;
+  --color-indigo-900: #1f2b43;
+  --color-indigo-950: #141c2c;
+
+  /* Background — uncoated paper stock (#F6F6F3) */
+  --color-paper-50: #ffffff;
+  --color-paper-100: #fbfbf9;
+  --color-paper-200: #f6f6f3;
+  --color-paper-300: #edede7;
+  --color-paper-400: #e0e0d8;
+  --color-paper-500: #cfcfc4;
+  --color-paper-600: #b4b4a7;
+  --color-paper-700: #8e8e82;
+  --color-paper-800: #6b6b61;
+  --color-paper-900: #4a4a43;
+
+  /* Accent — foil gold (#C18546) */
+  --color-gold-50: #fbf6ef;
+  --color-gold-100: #f5ead8;
+  --color-gold-200: #ead2af;
+  --color-gold-300: #ddb47f;
+  --color-gold-400: #d09c5d;
+  --color-gold-500: #c18546;
+  --color-gold-600: #a66e39;
+  --color-gold-700: #85562f;
+  --color-gold-800: #6b452a;
+  --color-gold-900: #593b26;
+
+  /* Honey — the bright yellow of the printed label work, and the ground the
+   * catalogue grid is drawn on. The gold ramp above is a bronze foil and goes
+   * muddy when it is asked to be a large flat field; this is the lighter,
+   * cleaner yellow that pairs with it. Used as a background only — never for
+   * type, where none of these pass contrast on paper. */
+  --color-honey-50: #fefbef;
+  --color-honey-100: #fdf5d4;
+  --color-honey-200: #fbeba6;
+  --color-honey-300: #f8de6e;
+  --color-honey-400: #f3d049;
+  --color-honey-500: #e8bd2a;
+
+  /* The grid rule drawn over the honey ground. */
+  --color-honey-line: rgba(255, 255, 255, 0.92);
+
+  /* Navy — an alias, not a new colour. The press blue at 600 is the darkest
+   * step in the ramp that still reads as blue rather than black, and it is the
+   * border the catalogue cards take against the honey ground (7.31:1). */
+  --color-navy: var(--color-indigo-600);
+
+  /* Semantic aliases — prefer these in components. */
+  --color-surface: var(--color-paper-200);
+  --color-surface-raised: var(--color-paper-100);
+  --color-surface-sunken: var(--color-paper-300);
+  --color-surface-inverted: var(--color-ink-900);
+  --color-hairline: var(--color-paper-400);
+  --color-hairline-strong: var(--color-paper-500);
+
+  /* ---------------------------------------------------------------------
+   * Typography tokens
+   * ------------------------------------------------------------------- */
+
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  /* Fluid scale — the min is mobile, the max is desktop. No breakpoint overrides. */
+  --text-display-2xl: clamp(3rem, 10vw, 7.5rem);
+  --text-display-2xl--line-height: 1;
+  --text-display-2xl--letter-spacing: -0.04em;
+
+  --text-display-xl: clamp(2.75rem, 8vw, 5.75rem);
+  --text-display-xl--line-height: 1.08;
+  --text-display-xl--letter-spacing: -0.04em;
+
+  --text-display-lg: clamp(2.25rem, 5.5vw, 4.25rem);
+  --text-display-lg--line-height: 1.08;
+  --text-display-lg--letter-spacing: -0.02em;
+
+  --text-display-md: clamp(1.875rem, 4vw, 3.25rem);
+  --text-display-md--line-height: 1.18;
+  --text-display-md--letter-spacing: -0.02em;
+
+  --text-display-sm: clamp(1.625rem, 3vw, 2.375rem);
+  --text-display-sm--line-height: 1.18;
+  --text-display-sm--letter-spacing: -0.02em;
+
+  --text-heading-lg: clamp(1.375rem, 2.2vw, 1.75rem);
+  --text-heading-lg--line-height: 1.18;
+  --text-heading-lg--letter-spacing: -0.02em;
+
+  --text-heading-md: clamp(1.1875rem, 1.6vw, 1.375rem);
+  --text-heading-md--line-height: 1.5;
+
+  --text-heading-sm: 1.0625rem;
+  --text-heading-sm--line-height: 1.5;
+
+  --text-body-lg: clamp(1.0625rem, 1.2vw, 1.1875rem);
+  --text-body-lg--line-height: 1.65;
+
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.65;
+
+  --text-body-sm: 0.9375rem;
+  --text-body-sm--line-height: 1.5;
+
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.02em;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.5;
+  --text-eyebrow--letter-spacing: 0.18em;
+
+  --tracking-widest: 0.18em;
+
+  /* ---------------------------------------------------------------------
+   * Responsive breakpoints — mobile first
+   * ------------------------------------------------------------------- */
+
+  --breakpoint-xs: 22.5rem; /* 360px — small Android */
+  --breakpoint-sm: 40rem; /* 640px — large phone */
+  --breakpoint-md: 48rem; /* 768px — tablet portrait */
+  --breakpoint-lg: 64rem; /* 1024px — tablet landscape / small laptop */
+  --breakpoint-xl: 80rem; /* 1280px — desktop */
+  --breakpoint-2xl: 96rem; /* 1536px — large desktop */
+  --breakpoint-3xl: 112rem; /* 1792px — ultrawide */
+
+  /* ---------------------------------------------------------------------
+   * Radius, shadow, motion
+   * ------------------------------------------------------------------- */
+
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+
+  /* Print-studio shadows: low, wide, almost colourless. */
+  --shadow-hairline: 0 1px 0 0 var(--color-paper-400);
+  --shadow-sheet: 0 1px 2px rgba(38, 34, 54, 0.04), 0 8px 24px -12px rgba(38, 34, 54, 0.12);
+  --shadow-lifted: 0 2px 4px rgba(38, 34, 54, 0.04), 0 18px 44px -18px rgba(38, 34, 54, 0.18);
+  --shadow-press: 0 32px 80px -32px rgba(38, 34, 54, 0.32);
+
+  --animate-shimmer: shimmer 1.6s var(--ease-linear) infinite;
+  --animate-float-slow: float-slow 9s ease-in-out infinite;
+}
+
+/*
+ * Motion tokens live in their own `@theme static` block.
+ *
+ * `static` matters: a plain `@theme` only emits the variables some generated
+ * utility actually references, so `--d-slow`, `--ease-entrance` and
+ * `--ease-exit` were being tree-shaken out of the stylesheet — which quietly
+ * breaks the promise this block makes, that every token in
+ * `src/lib/theme/animations.ts` has a CSS twin of the same name and value.
+ */
+@theme static {
+  /* Motion — MASTER_PROJECT_PLAN.md §9.1. Mirrors src/lib/theme/animations.ts
+   * exactly; the TS file is the source of truth for Framer, this is the same
+   * numbers for CSS. Change one, change the other. */
+
+  --d-instant: 100ms; /* tap feedback, checkbox, focus ring */
+  --d-fast: 180ms; /* hover, colour, border, chip */
+  --d-base: 240ms; /* card lift, dropdown, accordion, tab indicator */
+  --d-slow: 320ms; /* modal, drawer, mega panel, cross-fade */
+  --d-slower: 480ms; /* section reveal, image scale */
+  --d-scene: 1200ms; /* 3D entrance */
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1); /* the default */
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1); /* arriving */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1); /* leaving — faster than arriving */
+  --ease-linear: linear; /* progress bars and spinners only */
+
+  /* Deprecated alias, retained for one release (§9.1). New code uses
+   * `ease-standard`; the two curves are identical. */
+  --ease-editorial: var(--ease-standard);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -180% 0;
+  }
+  100% {
+    background-position: 180% 0;
+  }
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* Half, because the track renders its children exactly twice. */
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes feather-drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--feather-tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-12px) rotate(calc(var(--feather-tilt, 0deg) + 3deg));
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Base layer
+ * --------------------------------------------------------------------- */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-hairline);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor targets so the fixed navbar never covers a heading. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /*
+   * Lenis stamps these classes on <html> itself while it is driving the scroll
+   * position, and removes them on destroy — so these rules are live exactly
+   * when smooth scrolling is, and dormant on touch, under reduced motion, and
+   * before hydration.
+   *
+   * `scroll-behavior` has to go: Lenis and the CSS smooth-scroll animate the
+   * same value, and a hash link clicked with both running produces a visible
+   * fight between two easing curves. Anchor handling moves to Lenis's own
+   * `anchors` option, which lands on the same offset as `scroll-padding-top`.
+   */
+  html.lenis {
+    scroll-behavior: auto !important;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  /* Lenis sets this while stopped — which is what an open drawer does. Belt to
+   * the body lock's braces: it also blocks scroll chaining from the overlay. */
+  html.lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink-800);
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-synthesis-weight: none;
+    /* Never allow a stray wide element to sideways-scroll the page. */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-200);
+    color: var(--color-ink-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-indigo-500);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Only remove the outline where we draw our own focus treatment. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Prevent iOS from zooming when a form field is focused. */
+  input,
+  select,
+  textarea {
+    font-size: max(16px, var(--text-body-md));
+    font-family: inherit;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-paper-300);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-paper-500);
+    border-radius: 999px;
+    border: 2px solid var(--color-paper-300);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-300);
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Utilities
+ * --------------------------------------------------------------------- */
+
+/* Cap a text block at a comfortable reading measure. */
+@utility measure {
+  max-width: 58ch;
+}
+
+@utility measure-tight {
+  max-width: 38ch;
+}
+
+@utility measure-wide {
+  max-width: 72ch;
+}
+
+/* A 1px rule in the paper hairline colour, dividing editorial blocks. */
+@utility rule {
+  border-top: 1px solid var(--color-hairline);
+}
+
+/* Very fine paper grain. Sits behind hero sections. */
+@utility paper-grain {
+  background-image: radial-gradient(circle at 1px 1px, rgba(38, 34, 54, 0.055) 1px, transparent 0);
+  background-size: 4px 4px;
+}
+
+/* -----------------------------------------------------------------------
+ * Honey ground — the yellow surfaces
+ *
+ * Drawn in CSS rather than shipped as an image: it is a few hundred bytes
+ * instead of a request, it stays crisp at any density, and the cell size can
+ * respond to the viewport, which a bitmap cannot. The cell shrinks on small
+ * screens so the grid keeps the same visual weight on a phone as on a desk.
+ * --------------------------------------------------------------------- */
+
+@utility honey-grid {
+  --honey-cell: 2.25rem;
+  --honey-rule: 3px;
+
+  /* Image only — pair with `bg-honey-300` (or another honey step) at the call
+   * site. A `background-color` here silently loses to any `bg-*` utility the
+   * component already carries, because tailwind-merge cannot see the conflict
+   * between a core utility and a custom one. */
+  background-image:
+    linear-gradient(to bottom, var(--color-honey-line) var(--honey-rule), transparent var(--honey-rule)),
+    linear-gradient(to right, var(--color-honey-line) var(--honey-rule), transparent var(--honey-rule));
+  background-size: var(--honey-cell) var(--honey-cell);
+  background-position: -1px -1px;
+
+  @media (min-width: 40rem) {
+    --honey-cell: 2.75rem;
+  }
+
+  @media (min-width: 64rem) {
+    --honey-cell: 3.25rem;
+    --honey-rule: 3.5px;
+  }
+}
+
+/* The same grid, pale enough to sit behind body copy. For the sections that
+ * want the theme without becoming a yellow page. */
+@utility honey-grid-soft {
+  --honey-cell: 2.25rem;
+  --honey-rule: 2px;
+
+  /* Image only — see `honey-grid`. Pair with `bg-honey-50`. */
+  background-image:
+    linear-gradient(to bottom, rgba(232, 189, 42, 0.16) var(--honey-rule), transparent var(--honey-rule)),
+    linear-gradient(to right, rgba(232, 189, 42, 0.16) var(--honey-rule), transparent var(--honey-rule));
+  background-size: var(--honey-cell) var(--honey-cell);
+
+  @media (min-width: 64rem) {
+    --honey-cell: 3.25rem;
+  }
+}
+
+/* A soft corner wash. No grid — for bands that only need a hint of warmth. */
+@utility honey-wash {
+  background-color: var(--color-paper-100);
+  background-image:
+    radial-gradient(70rem 32rem at 8% -10%, rgba(248, 222, 110, 0.42), transparent 62%),
+    radial-gradient(48rem 28rem at 100% 108%, rgba(243, 208, 73, 0.28), transparent 60%);
+}
+
+/* A thin horizontal band of honey, brightest in the middle. `honey-wash`
+ * lights from a corner, which only reads as atmosphere on a tall section —
+ * on a 120px strip it just looks uneven. */
+@utility honey-band {
+  background-image: linear-gradient(
+    to right,
+    var(--color-honey-50) 0%,
+    var(--color-honey-200) 26%,
+    var(--color-honey-200) 74%,
+    var(--color-honey-50) 100%
+  );
+}
+
+/* Fades a decorative edge into the band beneath it, so a honey panel never
+ * ends on a hard line where it meets paper. */
+@utility honey-fade-b {
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+}
+
+/* -----------------------------------------------------------------------
+ * Marquee
+ *
+ * The track holds its children twice; the keyframe travels exactly -50%, so
+ * the loop is seamless whatever the content width. Duration is a variable so
+ * one utility serves both the fast header strip and the slow about-page one.
+ * --------------------------------------------------------------------- */
+
+@utility marquee-track {
+  display: flex;
+  width: max-content;
+  flex-wrap: nowrap;
+  animation: marquee-scroll var(--marquee-duration, 42s) linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+@utility marquee-reverse {
+  animation-direction: reverse;
+}
+
+/* Feathers its own left and right edges, so names enter and leave rather than
+ * being clipped mid-letter. */
+@utility marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+/* -----------------------------------------------------------------------
+ * Feather — the mark's motif, used as ornament
+ * --------------------------------------------------------------------- */
+
+/* A slow rise and tilt for a decorative feather. Paused entirely by the
+ * reduced-motion brake at the foot of this file. */
+@utility feather-drift {
+  animation: feather-drift var(--feather-duration, 11s) ease-in-out infinite;
+}
+
+/* Foil-gold text fill for a single emphasised word. */
+@utility text-foil {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-gold-600) 0%,
+    var(--color-gold-400) 38%,
+    var(--color-gold-200) 50%,
+    var(--color-gold-400) 62%,
+    var(--color-gold-600) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* -----------------------------------------------------------------------
+ * Interface motion — §9.3.
+ *
+ * Hover, focus and press states are CSS, not Framer. They need no JavaScript,
+ * they cannot desynchronise from the element they belong to, and Tailwind v4
+ * already scopes every `hover:` variant behind `@media (hover: hover)`, so none
+ * of them stick to a finger on a phone.
+ *
+ * What they must not do is invent their own timing. These four utilities are
+ * the only transitions a component should declare: pick the one that names
+ * what is changing, and the duration and curve come with it. If you find
+ * yourself writing `transition-[…] duration-[…]` by hand, the answer is a
+ * fifth utility here, not a fifth tempo in a component.
+ *
+ * Framer owns entrances, scroll and presence. CSS owns state. Never both on
+ * the same property of the same element — they will fight over the transform.
+ * --------------------------------------------------------------------- */
+
+/* Colour, border and fill. The default for links, icons and text. */
+@utility motion-tint {
+  transition-property: color, background-color, border-color, text-decoration-color,
+    outline-color, fill, stroke, opacity;
+  transition-duration: var(--d-fast);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* Card hover: a 2px rise, a border shift and a shadow, together. */
+@utility motion-lift {
+  transition-property: transform, translate, box-shadow, border-color, background-color;
+  transition-duration: var(--d-base);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* Small travel on a child element — an arrow stepping right, a rule drawing in. */
+@utility motion-nudge {
+  transition-property: transform, translate, scale;
+  transition-duration: var(--d-base);
+  transition-timing-function: var(--ease-standard);
+}
+
+/*
+ * Buttons carry two tempos at once: §9.3 puts hover at `fast` and the press
+ * at `instant`. Declaring both here keeps that out of the component, and out
+ * of a second utility whose ordering against this one would decide the result.
+ */
+@utility motion-button {
+  transition-property: background-color, border-color, color, box-shadow, scale;
+  transition-duration: var(--d-fast), var(--d-fast), var(--d-fast), var(--d-fast),
+    var(--d-instant);
+  transition-timing-function: var(--ease-standard);
+}
+
+/*
+ * One layer dissolving into another at the same size — §9.1 lists the
+ * poster→canvas cross-fade under `--d-slower`, and this is that. Opacity only:
+ * a cross-fade that also moves is not a cross-fade.
+ */
+@utility motion-crossfade {
+  transition-property: opacity;
+  transition-duration: var(--d-slower);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* The image inside a card frame, scaling while the frame stays still (§9.3). */
+@utility motion-zoom {
+  transition-property: transform, scale;
+  transition-duration: var(--d-slower);
+  transition-timing-function: var(--ease-standard);
+}
+
+/* Loading placeholder sheen. Pairs with the Skeleton component. */
+@utility shimmer {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.68) 50%,
+    transparent 100%
+  );
+  background-size: 180% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Skip-link: visually hidden until focused.
+ *
+ * The focus state lives inside the utility rather than as a `focus-visible:`
+ * class on the element. Tailwind v4's translate utilities set the CSS
+ * `translate` property, which composes with `transform` instead of overriding
+ * it — so a `focus-visible:translate-y-0` class would leave the link parked
+ * off-screen. */
+@utility skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform 200ms var(--ease-editorial);
+
+  &:focus-visible {
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Reduced motion — a global brake, on top of Framer's MotionConfig.
+ * --------------------------------------------------------------------- */
+
+/*
+ * Two sources, one behaviour: the operating system's setting, and the site's
+ * own toggle in the footer. The media query is what protects a visitor before
+ * any JavaScript has run; `MotionProvider` then mirrors the *effective* answer
+ * onto `<html data-motion-preference="reduced">`, which is what the toggle
+ * drives and what keeps up if the OS setting changes mid-session.
+ *
+ * This is the second of the three enforcement points §9.4 asks for. The first
+ * is `MotionConfig reducedMotion` in `src/providers/motion-provider.tsx`; the
+ * third is `<Parallax>`, which renders no transform at all when reduced.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* The blanket rule below collapses every animation to 0.01ms, which for a
+   * looping marquee means it snaps to its end frame instead of stopping.
+   * Stop it properly and give the row back as something that can be scrolled
+   * by hand. */
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .marquee-mask {
+    overflow-x: auto !important;
+    mask-image: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-motion-preference='reduced'] {
+  scroll-behavior: auto;
+}
+
+[data-motion-preference='reduced'] *,
+[data-motion-preference='reduced'] *::before,
+[data-motion-preference='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/*
+ * §9.4: "No transforms, no card lift, no image scale. The hairline and shadow
+ * parts of hover states are kept; only the movement is dropped."
+ *
+ * The brake above only collapses the *duration*, which would leave the lift
+ * snapping into place instead of easing. These rules remove the movement
+ * itself. They are scoped to the motion utilities on purpose: a blanket
+ * `transform: none` would also flatten a centred `-translate-x-1/2` and break
+ * the layout. Tailwind v4 compiles `translate-*` and `scale-*` to the discrete
+ * `translate` and `scale` properties, so these never touch `transform` proper.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lift:hover,
+  .motion-lift:focus-within,
+  .motion-nudge,
+  .motion-zoom {
+    translate: none !important;
+    scale: none !important;
+  }
+
+  /*
+   * §9.4: "Scroll reveals become plain visibility — content is simply there."
+   *
+   * Framer writes each reveal's hidden state into the server-rendered markup,
+   * and its own `reducedMotion` handling can only undo that after hydration.
+   * One frame of a blank section is exactly what someone who asked for less
+   * motion should not get, so the reveal is cancelled here instead — in CSS,
+   * before any JavaScript has run. `clipPath` needs naming separately: it is
+   * not one of Framer's positional keys, so `reducedMotion` never touches it.
+   */
+  [data-motion] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+}
+
+[data-motion-preference='reduced'] .motion-lift:hover,
+[data-motion-preference='reduced'] .motion-lift:focus-within,
+[data-motion-preference='reduced'] .motion-nudge,
+[data-motion-preference='reduced'] .motion-zoom {
+  translate: none !important;
+  scale: none !important;
+}
+
+[data-motion-preference='reduced'] [data-motion] {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
