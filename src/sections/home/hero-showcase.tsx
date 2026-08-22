@@ -61,6 +61,31 @@ import { cn } from '@/lib/utils';
  */
 
 /**
+ * How a card is framed.
+ *
+ * A photograph pinned edge-to-edge in a rounded rectangle is a picture of a
+ * thing. The same photograph on a paper margin, inside a hairline, with a second
+ * hairline around the image itself, is a *print* — mounted, the way a studio
+ * presents work. That is the entire difference between the flat tiles this
+ * replaced and something that looks considered, and it costs two borders and
+ * eight pixels of padding.
+ *
+ * The margin scales with the card, because it is padding on an element the
+ * subject transform already scales: 8px at rest, 12px on the featured card. A
+ * mount that stayed 8px while the print grew by half would read as a mistake.
+ *
+ * The subject's edge is `gold-500` at 45%, everything else `ink-800` at 12%.
+ * That is the only place the accent appears in the hero, and it does the same
+ * job as the caption — it says which one you are meant to be looking at.
+ */
+const MOUNT = {
+  mat: 'relative block rounded-[5px] bg-paper-50 p-2',
+  edge: 'ring-1 ring-ink-800/12',
+  edgeFeatured: 'ring-1 ring-gold-500/45',
+  window: 'relative block overflow-hidden rounded-[2px] bg-paper-200 ring-1 ring-ink-800/[0.07]',
+} as const;
+
+/**
  * Loading, per card.
  *
  * All five are eager, and that is a fix rather than a default. Lazy is right for
@@ -369,18 +394,22 @@ function Card({
       >
         <span className="sr-only">Show {item.name}</span>
 
+        {/* The mount. A photograph pinned edge-to-edge is a picture; the same
+            photograph on a paper margin inside a hairline is a *print*, and this
+            is a print studio. See `MOUNT`. */}
         <span
           aria-hidden
           className={cn(
-            'relative block overflow-hidden rounded-[3px] bg-paper-100',
-            'ring-1 ring-ink-800/8 motion-lift',
+            MOUNT.mat,
+            'motion-lift',
+            featured ? MOUNT.edgeFeatured : MOUNT.edge,
             featured
               ? 'shadow-[0_2px_4px_rgba(38,34,54,0.06),0_18px_36px_-18px_rgba(38,34,54,0.28),0_48px_90px_-40px_rgba(38,34,54,0.34)]'
               : 'shadow-[0_1px_2px_rgba(38,34,54,0.05),0_14px_30px_-18px_rgba(38,34,54,0.22)]',
             'group-hover/card:shadow-[0_4px_8px_rgba(38,34,54,0.07),0_26px_50px_-20px_rgba(38,34,54,0.32),0_60px_110px_-45px_rgba(38,34,54,0.36)]',
           )}
-          style={{ aspectRatio: item.aspect }}
         >
+          <span className={MOUNT.window} style={{ aspectRatio: item.aspect }}>
           <Image
             src={item.image.src}
             alt=""
@@ -399,6 +428,7 @@ function Card({
                 'linear-gradient(114deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.30) 52%, rgba(255,255,255,0) 62%)',
             }}
           />
+          </span>
         </span>
       </button>
     </div>
@@ -477,9 +507,13 @@ function MobileDeck({
           >
             <span
               aria-hidden
-              className="relative block overflow-hidden rounded-[3px] bg-paper-100 ring-1 ring-ink-800/8 shadow-[0_2px_4px_rgba(38,34,54,0.06),0_20px_40px_-20px_rgba(38,34,54,0.3)]"
-              style={{ aspectRatio: item.aspect }}
+              className={cn(
+                MOUNT.mat,
+                depth === 0 ? MOUNT.edgeFeatured : MOUNT.edge,
+                'shadow-[0_2px_4px_rgba(38,34,54,0.06),0_20px_40px_-20px_rgba(38,34,54,0.3)]',
+              )}
             >
+              <span className={MOUNT.window} style={{ aspectRatio: item.aspect }}>
               <Image
                 src={item.image.src}
                 alt=""
@@ -488,6 +522,7 @@ function MobileDeck({
                 sizes="84vw"
                 className="object-cover"
               />
+              </span>
             </span>
           </m.div>
         );

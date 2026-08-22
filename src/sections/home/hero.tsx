@@ -39,7 +39,16 @@ import { Eyebrow, editorialButton } from './shared';
  */
 export function Hero() {
   return (
-    <section className="paper-grain relative overflow-hidden bg-paper-200 pt-28 pb-[4.5rem] sm:pt-36 lg:pt-44 lg:pb-[7.5rem]">
+    /*
+      Top padding is 128px from `sm` up, not 176px.
+
+      The navbar is fixed and 73px tall, so 176px of section padding left a
+      103px void between the two — and pushed the CTAs to y=932 on a 1366×768
+      screen, which is 164px below the fold. The buttons are the only thing in
+      this section a visitor can act on; they do not belong below the fold on a
+      laptop. 128px clears the navbar by 55px, which is air rather than a gap.
+    */
+    <section className="paper-grain relative overflow-hidden bg-paper-200 pt-28 pb-[4.5rem] sm:pt-32 lg:pb-[7.5rem]">
       {/* The mark's motif, at watermark strength behind the headline. */}
       <FeatherWatermark
         tilt={-16}
@@ -100,7 +109,7 @@ export function Hero() {
             <FadeUp
               immediate
               delay={0.44}
-              className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center"
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
               <Button
                 href={primaryCta.href}
