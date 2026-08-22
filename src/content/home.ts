@@ -45,56 +45,101 @@ export const hero = {
 } as const;
 
 /* -------------------------------------------------------------------------
- * Hero marquee — two vertical runs of real work
+ * Hero showcase — five products on a floating stage
  *
- * The hero's media slot is two columns that scroll in opposite directions: the
- * navy column travels up, the bronze column travels down. Opposite is the whole
- * point — two columns moving the same way read as one sliding panel, and the
- * counter-motion is what makes the pair feel like a working press rather than a
- * carousel.
+ * One product is featured at a time and the rest sit behind it in depth. The
+ * feature advances on a slow cycle, so each piece steps forward into the light
+ * and back out again — the flow of work coming off a press, rather than a grid.
  *
- * Every tile is a real photograph of real work: eight projects the studio has
- * delivered and eight formats from the catalogue. Nothing here is a stock
- * image or a mockup.
+ * ## On the fifth product
  *
- * ## On the two colours
+ * The brief asked for Business Cards, Brochures, Packaging, Catalogues and
+ * **Signage**. The first four are established capabilities with copy and
+ * photography already on the site. Signage is not: `lib/seo/keywords.ts` records
+ * "no evidence the studio produces signage, absent from all 24 crawled pages",
+ * and `lib/seo/pages.ts` carries an unpublished signage scaffold blocked on
+ * "substrate range unknown; signage is not an established capability".
  *
- * One column is `indigo-600` (#344F7C) and the other `gold-500` (#C18546), and
- * the colour is the tile's *ground* rather than a tint over the photograph.
- * Most of this library was shot on near-white studio sweeps — a duotone or a
- * blend mode over those would turn a white background into a flat field of
- * colour and lose the product. Insetting the photograph on a coloured card
- * gives every tile a frame instead, which reads as deliberate at any size and
- * works with a cut-out and an environment shot alike.
+ * Putting it in the hero would be the site's most prominent claim to a service
+ * nobody has confirmed exists. Certificates takes the fifth slot instead — it is
+ * in `featuredProducts`, it is photographed, and foiling and embossing are real
+ * differentiators. If the studio does produce signage, swapping it back is this
+ * one record and one photograph.
+ *
+ * Every blurb below is already published elsewhere on this site; none is new.
  * ---------------------------------------------------------------------- */
 
-export interface MarqueeTile {
-  src: string;
-  alt: string;
+export interface HeroProduct {
+  id: string;
+  name: string;
+  /** One line, from `featuredProducts` or `pillars`. */
+  blurb: string;
+  image: HomeImage;
+  /** The photograph's own ratio, so no tile crops what it is showing. */
+  aspect: string;
 }
 
-/** Travels upward. Delivered client projects. */
-export const marqueeNavy: readonly MarqueeTile[] = [
-  { src: '/images/portfolio/rigid-box.jpg', alt: 'A rigid presentation box with a printed lid' },
-  { src: '/images/portfolio/ladorn-kraft-boxes.webp', alt: 'Kraft gift boxes with printed belly bands' },
-  { src: '/images/portfolio/silver-line-business-card.webp', alt: 'Business cards with a silver metallic line' },
-  { src: '/images/portfolio/drawer-box.webp', alt: 'A drawer-style rigid box, part opened' },
-  { src: '/images/portfolio/prasar-bharati.webp', alt: 'Institutional print work for Prasar Bharati' },
-  { src: '/images/portfolio/shoe-box.webp', alt: 'A printed shoe box' },
-  { src: '/images/portfolio/greeting-card.webp', alt: 'A foiled greeting card' },
-  { src: '/images/portfolio/omr-answer-sheets.webp', alt: 'OMR answer sheets, printed in quantity' },
-];
-
-/** Travels downward. Formats from the catalogue. */
-export const marqueeBronze: readonly MarqueeTile[] = [
-  { src: '/img/catalogue/books.webp', alt: 'Case-bound and perfect-bound books' },
-  { src: '/img/catalogue/rigid-boxes.webp', alt: 'Four rigid box constructions' },
-  { src: '/img/catalogue/certificates.webp', alt: 'A foiled and embossed certificate' },
-  { src: '/img/catalogue/pu-leather-diaries.webp', alt: 'PU leather diaries' },
-  { src: '/img/catalogue/brochures.webp', alt: 'An open multi-page brochure' },
-  { src: '/img/catalogue/paper-bags.webp', alt: 'Printed kraft paper bags with rope handles' },
-  { src: '/img/catalogue/wiro-binding.webp', alt: 'Wiro-bound notebooks' },
-  { src: '/images/products/telescope-lid-boxes.webp', alt: 'Telescope-lid rigid boxes' },
+export const heroProducts: readonly HeroProduct[] = [
+  {
+    id: 'business-cards',
+    name: 'Business cards',
+    blurb: 'Offset and digital, with foil, spot UV and metallic line treatments.',
+    image: {
+      src: '/img/catalogue/business-cards.webp',
+      alt: 'A stack of printed business cards with one card face up',
+      width: 800,
+      height: 800,
+    },
+    aspect: '1 / 1',
+  },
+  {
+    id: 'brochures',
+    name: 'Brochures',
+    blurb: 'Folded, saddle-stitched or perfect-bound, on coated and uncoated stock.',
+    image: {
+      src: '/img/catalogue/brochures.webp',
+      alt: 'An open multi-page brochure laid flat',
+      width: 1000,
+      height: 546,
+    },
+    aspect: '1000 / 546',
+  },
+  {
+    id: 'packaging',
+    name: 'Packaging',
+    blurb: 'Telescope lids, drawer style, hinged lids and magnetic closures, wrapped and lined.',
+    image: {
+      src: '/img/catalogue/rigid-boxes.webp',
+      alt: 'Four rigid box constructions — drawer, sleeve, perforated and patterned',
+      width: 980,
+      height: 799,
+    },
+    aspect: '980 / 799',
+  },
+  {
+    id: 'catalogues',
+    name: 'Catalogues',
+    blurb: 'Case-bound, perfect-bound and centre-pinned, from a single proof copy to a full run.',
+    image: {
+      src: '/img/catalogue/books.webp',
+      alt: 'Printed hardback and paperback books stacked and fanned',
+      width: 800,
+      height: 531,
+    },
+    aspect: '800 / 531',
+  },
+  {
+    id: 'certificates',
+    name: 'Certificates',
+    blurb: 'Foiled and embossed, with matching convocation folders and presentation covers.',
+    image: {
+      src: '/img/catalogue/certificates.webp',
+      alt: 'A printed certificate with a foiled border and seal',
+      width: 1000,
+      height: 615,
+    },
+    aspect: '1000 / 615',
+  },
 ];
 
 /**

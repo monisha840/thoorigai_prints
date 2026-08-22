@@ -15,7 +15,7 @@ import { CountUp } from '@/components/ui/count-up';
 import { FeatherWatermark } from '@/components/ui/feather';
 import { credibility, hero } from '@/content/home';
 import { primaryCta } from '@/lib/navigation';
-import { HeroMarquee } from './hero-marquee';
+import { HeroShowcase } from './hero-showcase';
 import { Eyebrow, editorialButton } from './shared';
 
 /**
@@ -26,20 +26,16 @@ import { Eyebrow, editorialButton } from './shared';
  * arrives; the photograph is `priority` and is the LCP element (§2.8 — LCP
  * under 2.0s on throttled 4G, and WebGL is never in the critical path).
  *
- * The media slot is `HeroMarquee`: two vertical columns of real work running
- * against each other, navy travelling up and bronze travelling down. It ships no
- * JavaScript — the motion is a CSS keyframe, and `transform` is the only
- * property that animates.
+ * The media slot is `HeroShowcase`: five products on a stage with real depth,
+ * one of them featured at a time, the feature advancing on a slow cycle so each
+ * piece steps forward into the light and back out.
  *
- * It replaced, in order, a WebGL sequence that narrated the production process
- * and then a single photograph. The scene went because it had no words and so
- * could not explain itself, and because `ProcessTimeline` three sections below
- * already tells the same five stages with numbers and captions. What is here now
- * does the one job a hero is actually good at, and does it sixteen times over:
- * show the work.
- *
- * Every tile is a real delivered job or a real catalogue format — sixteen
- * photographs, none of them stock and none of them a mockup.
+ * It replaced, in order, a WebGL sequence, a single photograph, and two vertical
+ * marquees. The marquee failed for a reason worth remembering: sixteen tiles at
+ * one size on one plane have no subject, so it read as a gallery rather than as
+ * a studio. Depth and hierarchy are what fixed it — one card dominant, the rest
+ * behind it in Z — and it is CSS perspective rather than WebGL, so it costs
+ * five images and no library.
  */
 export function Hero() {
   return (
@@ -139,7 +135,7 @@ export function Hero() {
             deflection; without it the drift exposes the background.
           */}
           <FadeIn immediate delay={0.2} className="lg:col-span-6">
-            <HeroMarquee />
+            <HeroShowcase />
           </FadeIn>
         </MouseParallax>
 

@@ -10,16 +10,12 @@ export { Testimonials } from './testimonials';
 export { HomeCta } from './home-cta';
 
 /**
- * The hero's media slot: two vertical marquees of real work, navy travelling up
- * and bronze travelling down. A server component that ships no JavaScript — the
- * motion is a CSS keyframe, and the only animated property is `transform`.
- *
- * It replaced `HeroStage`, which carried §10.2's "hero objects" scene and the
- * §10.4 loading contract that went with it. Both are gone: the scene could not
- * explain itself without words, and once the slot was a photograph there was no
- * canvas left to gate, defer or cross-fade.
+ * The hero's media slot: five products on a floating stage, one featured at a
+ * time. Pseudo-3D — CSS `perspective`, `translateZ` and layered shadows, with
+ * Framer Motion driving the slots, the pointer tilt and the caption swap. No
+ * WebGL, and every animated property is `transform` or `opacity`.
  */
-export { HeroMarquee } from './hero-marquee';
+export { HeroShowcase } from './hero-showcase';
 
 /**
  * Superseded. `HeroScene` mounts the placeholder floating sheet — decorative
