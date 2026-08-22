@@ -44,6 +44,59 @@ export const hero = {
   } satisfies HomeImage,
 } as const;
 
+/* -------------------------------------------------------------------------
+ * Hero marquee — two vertical runs of real work
+ *
+ * The hero's media slot is two columns that scroll in opposite directions: the
+ * navy column travels up, the bronze column travels down. Opposite is the whole
+ * point — two columns moving the same way read as one sliding panel, and the
+ * counter-motion is what makes the pair feel like a working press rather than a
+ * carousel.
+ *
+ * Every tile is a real photograph of real work: eight projects the studio has
+ * delivered and eight formats from the catalogue. Nothing here is a stock
+ * image or a mockup.
+ *
+ * ## On the two colours
+ *
+ * One column is `indigo-600` (#344F7C) and the other `gold-500` (#C18546), and
+ * the colour is the tile's *ground* rather than a tint over the photograph.
+ * Most of this library was shot on near-white studio sweeps — a duotone or a
+ * blend mode over those would turn a white background into a flat field of
+ * colour and lose the product. Insetting the photograph on a coloured card
+ * gives every tile a frame instead, which reads as deliberate at any size and
+ * works with a cut-out and an environment shot alike.
+ * ---------------------------------------------------------------------- */
+
+export interface MarqueeTile {
+  src: string;
+  alt: string;
+}
+
+/** Travels upward. Delivered client projects. */
+export const marqueeNavy: readonly MarqueeTile[] = [
+  { src: '/images/portfolio/rigid-box.jpg', alt: 'A rigid presentation box with a printed lid' },
+  { src: '/images/portfolio/ladorn-kraft-boxes.webp', alt: 'Kraft gift boxes with printed belly bands' },
+  { src: '/images/portfolio/silver-line-business-card.webp', alt: 'Business cards with a silver metallic line' },
+  { src: '/images/portfolio/drawer-box.webp', alt: 'A drawer-style rigid box, part opened' },
+  { src: '/images/portfolio/prasar-bharati.webp', alt: 'Institutional print work for Prasar Bharati' },
+  { src: '/images/portfolio/shoe-box.webp', alt: 'A printed shoe box' },
+  { src: '/images/portfolio/greeting-card.webp', alt: 'A foiled greeting card' },
+  { src: '/images/portfolio/omr-answer-sheets.webp', alt: 'OMR answer sheets, printed in quantity' },
+];
+
+/** Travels downward. Formats from the catalogue. */
+export const marqueeBronze: readonly MarqueeTile[] = [
+  { src: '/img/catalogue/books.webp', alt: 'Case-bound and perfect-bound books' },
+  { src: '/img/catalogue/rigid-boxes.webp', alt: 'Four rigid box constructions' },
+  { src: '/img/catalogue/certificates.webp', alt: 'A foiled and embossed certificate' },
+  { src: '/img/catalogue/pu-leather-diaries.webp', alt: 'PU leather diaries' },
+  { src: '/img/catalogue/brochures.webp', alt: 'An open multi-page brochure' },
+  { src: '/img/catalogue/paper-bags.webp', alt: 'Printed kraft paper bags with rope handles' },
+  { src: '/img/catalogue/wiro-binding.webp', alt: 'Wiro-bound notebooks' },
+  { src: '/images/products/telescope-lid-boxes.webp', alt: 'Telescope-lid rigid boxes' },
+];
+
 /**
  * Credibility strip. Four facts, every one verifiable from the audit —
  * replacing the invented `studioStats` in `lib/site.ts` (`1,200+ jobs`,

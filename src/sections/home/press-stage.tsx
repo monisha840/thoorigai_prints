@@ -111,7 +111,7 @@ export function PressStage({ className }: PressStageProps) {
    * control points are read against the desktop plate, and on a 320px-wide
    * bleed the trace is thinner than the machine's own panel gaps.
    *
-   * The deferral is the same as `HeroStage`'s. Intersection first, so the chunk
+   * Intersection first, so the chunk
    * is never fetched for a visitor who stops at the hero, then an idle callback,
    * so 240kb of `three` never competes with the images still decoding above it.
    */
@@ -244,9 +244,9 @@ export function PressStage({ className }: PressStageProps) {
 
         {/* ------------------------------------------------------------------
             The plate — the photograph's own box, and the coordinate space the
-            markers live in. Bleeds the gutter below `lg` exactly as `HeroStage`
-            does; contained and centred from `lg` up, where the marker panels
-            need room to open inside the container.
+            markers live in. Bleeds the gutter below `lg`; contained and
+            centred from `lg` up, where the marker panels need room to open
+            inside the container.
            ------------------------------------------------------------------ */}
         <div
           ref={plateRef}

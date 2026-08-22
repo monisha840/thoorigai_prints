@@ -15,7 +15,7 @@ import { CountUp } from '@/components/ui/count-up';
 import { FeatherWatermark } from '@/components/ui/feather';
 import { credibility, hero } from '@/content/home';
 import { primaryCta } from '@/lib/navigation';
-import { HeroStage } from './hero-stage';
+import { HeroMarquee } from './hero-marquee';
 import { Eyebrow, editorialButton } from './shared';
 
 /**
@@ -26,16 +26,20 @@ import { Eyebrow, editorialButton } from './shared';
  * arrives; the photograph is `priority` and is the LCP element (§2.8 — LCP
  * under 2.0s on throttled 4G, and WebGL is never in the critical path).
  *
- * The media slot is `HeroStage`: one photograph of real finished work, on a
- * matte, with a small pointer and scroll drift. It carried a WebGL sequence
- * narrating the production process until that was removed — the scene had no
- * words, so it could not explain itself, and `ProcessTimeline` three sections
- * below already tells the same five stages with numbers and captions. The hero
- * shows the work; the page explains the process.
+ * The media slot is `HeroMarquee`: two vertical columns of real work running
+ * against each other, navy travelling up and bronze travelling down. It ships no
+ * JavaScript — the motion is a CSS keyframe, and `transform` is the only
+ * property that animates.
  *
- * `Board-on-board-hard.jpg` is the one asset in the library with real zoom
- * headroom (2447², §8.3), which is why it can carry a hero at all. Nine of the
- * in-use product shots are under 700px and could not.
+ * It replaced, in order, a WebGL sequence that narrated the production process
+ * and then a single photograph. The scene went because it had no words and so
+ * could not explain itself, and because `ProcessTimeline` three sections below
+ * already tells the same five stages with numbers and captions. What is here now
+ * does the one job a hero is actually good at, and does it sixteen times over:
+ * show the work.
+ *
+ * Every tile is a real delivered job or a real catalogue format — sixteen
+ * photographs, none of them stock and none of them a mockup.
  */
 export function Hero() {
   return (
@@ -135,7 +139,7 @@ export function Hero() {
             deflection; without it the drift exposes the background.
           */}
           <FadeIn immediate delay={0.2} className="lg:col-span-6">
-            <HeroStage />
+            <HeroMarquee />
           </FadeIn>
         </MouseParallax>
 

@@ -10,14 +10,16 @@ export { Testimonials } from './testimonials';
 export { HomeCta } from './home-cta';
 
 /**
- * The hero's media slot: the photograph, and the fold sequence over it.
+ * The hero's media slot: two vertical marquees of real work, navy travelling up
+ * and bronze travelling down. A server component that ships no JavaScript — the
+ * motion is a CSS keyframe, and the only animated property is `transform`.
  *
- * `HeroStage` is what §10.2's "hero objects" scene became, and it is the
- * `StageCanvas` contract from §10.4 implemented for one slot — poster first and
- * always, tier gate, idle deferral, 400ms cross-fade, silent failure. The
- * photograph remains the LCP element; Tier C never loads WebGL at all.
+ * It replaced `HeroStage`, which carried §10.2's "hero objects" scene and the
+ * §10.4 loading contract that went with it. Both are gone: the scene could not
+ * explain itself without words, and once the slot was a photograph there was no
+ * canvas left to gate, defer or cross-fade.
  */
-export { HeroStage } from './hero-stage';
+export { HeroMarquee } from './hero-marquee';
 
 /**
  * Superseded. `HeroScene` mounts the placeholder floating sheet — decorative

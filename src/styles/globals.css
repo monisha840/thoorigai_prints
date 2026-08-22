@@ -238,6 +238,16 @@
   }
 }
 
+@keyframes marquee-scroll-y {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* Half, because the track renders its children exactly twice. */
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
 @keyframes feather-drift {
   0%,
   100% {
@@ -506,6 +516,22 @@
   }
 }
 
+/* The vertical twin. Same contract as `marquee-track`: the track holds its
+ * children exactly twice and the keyframe travels exactly -50%, so the loop is
+ * seamless whatever the content height. Pair with `marquee-reverse` to run it
+ * the other way. */
+@utility marquee-track-y {
+  display: flex;
+  flex-direction: column;
+  height: max-content;
+  flex-wrap: nowrap;
+  animation: marquee-scroll-y var(--marquee-duration, 42s) linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
 @utility marquee-reverse {
   animation-direction: reverse;
 }
@@ -518,6 +544,18 @@
     transparent 0,
     #000 8%,
     #000 92%,
+    transparent 100%
+  );
+}
+
+/* Feathers its own top and bottom edges, so tiles enter and leave rather than
+ * being clipped in half. */
+@utility marquee-mask-y {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 9%,
+    #000 91%,
     transparent 100%
   );
 }
@@ -674,13 +712,19 @@
    * looping marquee means it snaps to its end frame instead of stopping.
    * Stop it properly and give the row back as something that can be scrolled
    * by hand. */
-  .marquee-track {
+  .marquee-track,
+  .marquee-track-y {
     animation: none !important;
     transform: none !important;
   }
 
   .marquee-mask {
     overflow-x: auto !important;
+    mask-image: none !important;
+  }
+
+  .marquee-mask-y {
+    overflow-y: auto !important;
     mask-image: none !important;
   }
 
@@ -696,6 +740,29 @@
 
 [data-motion-preference='reduced'] {
   scroll-behavior: auto;
+}
+
+/*
+ * The footer toggle needs the same explicit stop the media query gets. The
+ * blanket rule below only collapses `animation-duration` to 0.01ms, and for an
+ * infinite loop that means it snaps straight to its end frame and sits there —
+ * a marquee scrolled fully off. This was already true of the horizontal track
+ * before the vertical one existed; both are stopped properly here.
+ */
+[data-motion-preference='reduced'] .marquee-track,
+[data-motion-preference='reduced'] .marquee-track-y {
+  animation: none !important;
+  transform: none !important;
+}
+
+[data-motion-preference='reduced'] .marquee-mask {
+  overflow-x: auto !important;
+  mask-image: none !important;
+}
+
+[data-motion-preference='reduced'] .marquee-mask-y {
+  overflow-y: auto !important;
+  mask-image: none !important;
 }
 
 [data-motion-preference='reduced'] *,
