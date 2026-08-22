@@ -79,12 +79,15 @@ export function ImageGallery() {
               onClick={() => setOpenIndex(index)}
               className="group block w-full text-left"
               aria-label={`View ${entry.caption} full size`}
+              data-cursor="product"
             >
               <PrintPlate
                 image={entry.image}
                 ratio="natural"
                 sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
                 tone="ink"
+                className="product-lift product-sheen"
+                imageClassName="product-bright"
                 overlay={
                   <span
                     aria-hidden

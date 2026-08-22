@@ -2,6 +2,7 @@ import { ArrowUpRight, Phone } from 'lucide-react';
 
 import { Section } from '@/components/layout/section';
 import { FadeUp } from '@/components/motion';
+import { Magnetic } from '@/components/cursor';
 import { Button } from '@/components/ui/button';
 import { FeatherWatermark } from '@/components/ui/feather';
 import { Heading } from '@/components/ui/heading';
@@ -89,9 +90,17 @@ export function CtaSection({
         </Heading>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:shrink-0">
-          <Button href={primaryCta.href} variant="accent" size="lg" iconAfter={<ArrowUpRight />}>
-            {primaryCta.label}
-          </Button>
+          <Magnetic className="w-full sm:w-auto">
+            <Button
+              href={primaryCta.href}
+              variant="accent"
+              size="lg"
+              iconAfter={<ArrowUpRight />}
+              fullWidth
+            >
+              {primaryCta.label}
+            </Button>
+          </Magnetic>
           <Button
             href={toTelHref(siteConfig.contact.phone)}
             variant="ghost"

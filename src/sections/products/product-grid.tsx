@@ -245,7 +245,7 @@ function FormatFeature({
 
 function FormatPane({ product, index }: { product: ProductItem; index: number }) {
   return (
-    <article className="group">
+    <article className="group" data-cursor="product">
       <FadeIn>
         {product.image ? (
           <PrintPlate
@@ -256,7 +256,8 @@ function FormatPane({ product, index }: { product: ProductItem; index: number })
             frame="bleed"
             sizes="(min-width: 1024px) 46vw, 45vw"
             tone={product.image.ground === 'dark' ? 'ink' : 'paper'}
-            className="shadow-[0_22px_54px_-32px_rgba(38,34,54,0.5)]"
+            className="product-lift product-sheen shadow-[0_22px_54px_-32px_rgba(38,34,54,0.5)]"
+            imageClassName="product-bright"
           />
         ) : null}
       </FadeIn>

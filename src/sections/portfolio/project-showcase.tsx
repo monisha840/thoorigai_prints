@@ -109,6 +109,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
               tone={project.image.ground === 'dark' ? 'ink' : 'paper'}
               marks
               parallax
+              imageClassName="product-bright"
             />
           </div>
         </Parallax>

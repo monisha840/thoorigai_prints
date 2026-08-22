@@ -9,6 +9,7 @@ import { Container } from './container';
 import { ScrollProgress } from '@/components/motion';
 import { MobileMenu } from './mobile-menu';
 import { NavLink } from './nav-link';
+import { Magnetic } from '@/components/cursor';
 import { Button } from '@/components/ui/button';
 import { useScrollPosition } from '@/hooks/use-scroll-position';
 import { mainNav, primaryCta } from '@/lib/navigation';
@@ -125,10 +126,12 @@ export function Navbar() {
 
               {/* The label shortens rather than disappearing — the button used
                   to vanish below 640px, which left small phones with no CTA. */}
-              <Button href={primaryCta.href} size="sm" variant="primary">
-                <span className="hidden sm:inline">{primaryCta.label}</span>
-                <span className="sm:hidden">Quote</span>
-              </Button>
+              <Magnetic>
+                <Button href={primaryCta.href} size="sm" variant="primary">
+                  <span className="hidden sm:inline">{primaryCta.label}</span>
+                  <span className="sm:hidden">Quote</span>
+                </Button>
+              </Magnetic>
 
               <button
                 ref={triggerRef}

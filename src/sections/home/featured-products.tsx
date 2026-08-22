@@ -130,7 +130,11 @@ export function FeaturedProducts() {
       >
         {featuredProducts.map((item, index) => (
           <StaggerItem key={item.name} as="li">
-            <article className="group relative">
+            {/* `data-cursor="product"` is the whole handshake with the
+                cursor: the pool opens out and warms over printed work. Nothing
+                registers and nothing subscribes - `SpotlightCursor` reads the
+                attribute off `closest()`. */}
+            <article className="group relative" data-cursor="product">
               {/*
                 The pointer field is scoped to the piece and set to the media
                 range, so the photograph answers the cursor by a few pixels
@@ -140,7 +144,7 @@ export function FeaturedProducts() {
               */}
               <MouseParallax range={pointer.mediaRange}>
                 <div
-                  className={`${mediaFrame} ${TILE_RATIO} shadow-[0_14px_36px_-26px_rgba(38,34,54,0.45)]`}
+                  className={`${mediaFrame} ${TILE_RATIO} product-lift product-sheen shadow-[0_14px_36px_-26px_rgba(38,34,54,0.45)]`}
                 >
                   {/*
                     Overscan, so the drift never exposes the frame's edge. 1.04
@@ -156,7 +160,7 @@ export function FeaturedProducts() {
                       alt={item.image.alt}
                       fill
                       sizes={TILE_SIZES}
-                      className={`object-cover ${mediaZoom}`}
+                      className={`object-cover product-bright ${mediaZoom}`}
                     />
                   </MouseParallaxLayer>
                 </div>

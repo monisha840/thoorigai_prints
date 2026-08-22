@@ -167,8 +167,14 @@ export const smoothScroll = {
  * page having depth, not as things sliding around under the cursor.
  */
 export const pointer = {
-  /** Peak travel (px) for a depth-1 layer in a hero-scale field. */
-  range: 18,
+  /**
+   * Peak travel (px) for a depth-1 layer in a hero-scale field.
+   *
+   * 10, not 18. The depth illusion is meant to be felt rather than watched, and
+   * past about ten pixels a foreground layer stops reading as parallax and
+   * starts reading as the page sliding under the cursor.
+   */
+  range: 10,
   /** Peak travel (px) for media drifting inside a card. Smaller field, smaller move. */
   mediaRange: 8,
   /**

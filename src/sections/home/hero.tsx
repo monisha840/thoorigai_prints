@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 
+import { Magnetic } from '@/components/cursor';
 import { Container } from '@/components/layout/container';
 import {
   FadeIn,
@@ -132,24 +133,28 @@ export function Hero() {
               delay={0.44}
               className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              <Button
-                href={primaryCta.href}
-                size="lg"
-                iconAfter={<ArrowRight />}
-                className={editorialButton}
-                fullWidth
-              >
-                Get a quote
-              </Button>
-              <Button
-                href="/portfolio"
-                variant="secondary"
-                size="lg"
-                className={editorialButton}
-                fullWidth
-              >
-                See our work
-              </Button>
+              <Magnetic className="w-full sm:w-auto">
+                <Button
+                  href={primaryCta.href}
+                  size="lg"
+                  iconAfter={<ArrowRight />}
+                  className={editorialButton}
+                  fullWidth
+                >
+                  Get a quote
+                </Button>
+              </Magnetic>
+              <Magnetic className="w-full sm:w-auto">
+                <Button
+                  href="/portfolio"
+                  variant="secondary"
+                  size="lg"
+                  className={editorialButton}
+                  fullWidth
+                >
+                  See our work
+                </Button>
+              </Magnetic>
             </FadeUp>
           </MouseParallaxLayer>
 

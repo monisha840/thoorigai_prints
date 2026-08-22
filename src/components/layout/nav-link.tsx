@@ -30,6 +30,9 @@ export function NavLink({ item, inverted = false, className }: NavLinkProps) {
     <Link
       href={item.href}
       aria-current={active ? 'page' : undefined}
+      /* The pool tightens on a nav item the same way it does on a CTA. Read by
+         `SpotlightCursor` - nothing is registered or subscribed. */
+      data-cursor="magnetic"
       className={cn(
         'group relative inline-flex h-9 items-center px-1 text-body-sm font-medium',
         'motion-tint',

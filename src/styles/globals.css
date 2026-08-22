@@ -801,15 +801,15 @@
 /* -----------------------------------------------------------------------
  * The pointer
  *
- * A registration dot under the hand and a small stack of sheets trailing it.
- * The component in `components/cursor/paper-cursor.tsx` owns the motion; this
- * owns the shape.
+ * A dot of ink under the hand, and a pool of press blue that follows it.
+ * `components/cursor/spotlight-cursor.tsx` owns the position; this owns
+ * everything else.
  *
- * The split is by frequency. Position and tilt change every frame, so they are
- * motion values written straight to the DOM by Framer. The fan changes when the
- * pointer crosses into something interactive and at no other time, so it is a
- * data attribute and a CSS transition - which costs nothing per frame and is
- * interpolated by the compositor rather than by the main thread.
+ * The split is by frequency. Position changes every frame and is two motion
+ * values Framer writes straight to the DOM. Size, opacity and colour change
+ * when the pointer crosses an element boundary - a handful of times a minute -
+ * so they are CSS transitions off `data-state`, interpolated by the compositor
+ * with no main-thread work at all.
  *
  * Nothing here applies until the component sets `data-cursor` on `<html>`,
  * which it only does on a device with a real pointer and only when motion is
@@ -822,118 +822,141 @@
  * `html` alone loses to all of them. One static rule under one attribute is the
  * cheapest way to outrank them without touching every component.
  */
-html[data-cursor='paper'],
-html[data-cursor='paper'] * {
+html[data-cursor='on'],
+html[data-cursor='on'] * {
   cursor: none;
 }
 
-.pc-root {
+.sc-root {
   position: fixed;
   inset: 0;
   z-index: 130;
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--d-base) var(--ease-standard);
+  transition: opacity var(--d-slow) var(--ease-standard);
 }
 
-.pc-root[data-visible] {
+.sc-root[data-visible] {
   opacity: 1;
 }
 
 /*
- * Both movers are positioned by `transform` alone and centred by margin rather
- * than by a second translate — Framer builds `transform` from `x`/`y`, so a
+ * Both movers are placed by `transform` alone and centred by margin rather than
+ * by a second translate - Framer builds `transform` from `x`/`y`, so a
  * `translate(-50%, -50%)` on the same element would be overwritten on the first
  * frame.
  */
-.pc-dot,
-.pc-follow {
+.sc-dot,
+.sc-follow {
   position: absolute;
   top: 0;
   left: 0;
   will-change: transform;
 }
 
-.pc-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
+.sc-dot {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
   border-radius: 9999px;
   background: var(--color-ink-800);
   /* A paper ring, so the dot survives the dark bands. On paper it disappears
      into the page; on ink it is the only thing keeping the dot visible. */
   box-shadow: 0 0 0 1.5px rgb(251 251 249 / 0.9);
-}
-
-/*
- * The stage carries the camera. It needs a real box for `perspective-origin` to
- * mean anything: on the zero-sized point that positions it, the origin would
- * sit at the corner of the sheets and every rotation would read as a shear.
- *
- * The offset is what makes this a follower rather than a badge stuck to the
- * dot — the stack rides just below and right of the tip, where a sheet being
- * carried would be.
- */
-.pc-stage {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  width: 26px;
-  height: 34px;
-  perspective: 420px;
-}
-
-.pc-sheets {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-}
-
-.pc-sheet {
-  position: absolute;
-  inset: 0;
-  border-radius: 2px;
-  background: var(--color-paper-50);
-  border: 1px solid rgb(38 34 54 / 0.12);
-  /* Low and wide. A cursor-sized element cannot carry a cursor-sized shadow
-     without turning into a smudge. */
-  box-shadow: 0 1px 2px rgb(38 34 54 / 0.1), 0 6px 14px -8px rgb(38 34 54 / 0.35);
-}
-
-/*
- * The front sheet is the reference plane; the two behind step back in Z and
- * slide out from under it. `[data-open]` is the fanned state, set when the
- * pointer is over something interactive.
- *
- * A transition rather than a spring, deliberately. The fan changes when the
- * pointer crosses a boundary and at no other time, so there is nothing for
- * JavaScript to compute on the frames in between - the compositor interpolates
- * two transforms and the main thread stays out of it entirely.
- */
-.pc-sheet {
   transition:
-    transform var(--d-slow) var(--ease-standard),
-    opacity var(--d-slow) var(--ease-standard);
+    width var(--d-base) var(--ease-standard),
+    height var(--d-base) var(--ease-standard),
+    margin var(--d-base) var(--ease-standard),
+    opacity var(--d-base) var(--ease-standard);
 }
 
-.pc-sheet:nth-child(2) {
-  transform: translate3d(-2px, 2px, -7px) rotate(-2deg);
-  opacity: 0.86;
+/* Over a CTA the dot draws in, so the pool tightening around it reads as light
+   narrowing onto a target rather than as two unrelated things moving. */
+.sc-dot[data-state='magnetic'] {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
 }
 
-.pc-sheet:nth-child(3) {
-  transform: translate3d(-4px, 4px, -14px) rotate(-4deg);
-  opacity: 0.7;
+/* Over printed work the dot gets out of the way: the product is the subject,
+   and a marker sitting on top of a photograph is not light, it is a smudge. */
+.sc-dot[data-state='product'] {
+  opacity: 0.45;
 }
 
-.pc-sheets[data-open] .pc-sheet:nth-child(2) {
-  transform: translate3d(-5px, 5px, -14px) rotate(-5deg);
-  opacity: 0.92;
+/*
+ * The pool.
+ *
+ * `sc-glows` carries size; the two `sc-glow` children carry colour. They are
+ * separate because the accent has to cross-fade in rather than replace a
+ * background - `background` does not interpolate, and a gradient snapping from
+ * blue to bronze is exactly the kind of thing this brief rules out.
+ */
+.sc-glows {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  margin: -80px 0 0 -80px;
+  transition: transform var(--d-slow) var(--ease-standard);
 }
 
-.pc-sheets[data-open] .pc-sheet:nth-child(3) {
-  transform: translate3d(-10px, 10px, -28px) rotate(-10deg);
-  opacity: 0.8;
+.sc-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  transition: opacity var(--d-slow) var(--ease-standard);
+}
+
+/*
+ * Transparent at the centre, peaking through the middle of the radius, gone by
+ * the edge. The light falls *around* the pointer rather than over it, so type
+ * under the dot keeps its full contrast - which is the whole difference between
+ * a spotlight and a tinted lens.
+ *
+ * A gradient, not `filter: blur()`. A blurred 160px element that moves every
+ * frame is real work on a mid-range laptop; a gradient is painted once into a
+ * compositor layer and then only ever translated.
+ */
+.sc-glow--ink {
+  background: radial-gradient(
+    circle closest-side,
+    rgb(52 79 124 / 0) 0%,
+    rgb(52 79 124 / 0.05) 38%,
+    rgb(52 79 124 / 0.085) 60%,
+    rgb(52 79 124 / 0.03) 82%,
+    rgb(52 79 124 / 0) 100%
+  );
+}
+
+/* Foil. The one place the accent appears, and only over printed work. */
+.sc-glow--foil {
+  opacity: 0;
+  background: radial-gradient(
+    circle closest-side,
+    rgb(193 133 70 / 0) 0%,
+    rgb(193 133 70 / 0.05) 44%,
+    rgb(193 133 70 / 0.075) 64%,
+    rgb(193 133 70 / 0) 100%
+  );
+}
+
+/* Ordinary interactive: the pool tightens a little without changing character. */
+.sc-glows[data-state='hover'] {
+  transform: scale(0.92);
+}
+
+/* A CTA: the light narrows and concentrates. */
+.sc-glows[data-state='magnetic'] {
+  transform: scale(0.66);
+}
+
+/* Printed work: the pool opens out and warms. */
+.sc-glows[data-state='product'] {
+  transform: scale(1.16);
+}
+
+.sc-glows[data-state='product'] .sc-glow--foil {
+  opacity: 1;
 }
 
 /*
@@ -941,16 +964,137 @@ html[data-cursor='paper'] * {
  * reduced motion; this is the guarantee that holds even if it somehow does.
  */
 @media (prefers-reduced-motion: reduce) {
-  .pc-root {
+  .sc-root {
     display: none;
   }
 
-  html[data-cursor='paper'],
-  html[data-cursor='paper'] * {
+  html[data-cursor='on'],
+  html[data-cursor='on'] * {
     cursor: auto;
   }
 }
 
-[data-motion-preference='reduced'] .pc-root {
+[data-motion-preference='reduced'] .sc-root {
   display: none;
+}
+
+/* -----------------------------------------------------------------------
+ * Printed work, under the light
+ *
+ * What a product tile does when the pointer is on it. Every property here is
+ * transform, opacity or filter on a hover transition - nothing runs per frame,
+ * and nothing here reflows.
+ * --------------------------------------------------------------------- */
+
+/*
+ * The lift. 6px, which is enough to read as the piece coming off the page and
+ * little enough that a grid of them does not start bobbing as the pointer
+ * crosses it. Scale is deliberately absent: a tile that grows pushes its
+ * neighbours around and turns a catalogue into a carousel.
+ */
+@utility product-lift {
+  transition:
+    transform var(--d-base) var(--ease-standard),
+    box-shadow var(--d-base) var(--ease-standard);
+}
+
+.group:hover .product-lift,
+.group:focus-within .product-lift {
+  transform: translate3d(0, -6px, 0);
+  box-shadow:
+    0 2px 4px rgb(38 34 54 / 0.05),
+    0 22px 44px -24px rgb(38 34 54 / 0.4);
+}
+
+/*
+ * The photograph under the light: a little brighter, and a highlight that
+ * crosses it as the pointer arrives.
+ *
+ * The sheen is a gradient on a pseudo-element that translates - not a moving
+ * `background-position`, which repaints the whole element every frame. It runs
+ * once on hover and stops, because a highlight that keeps sweeping is a
+ * showroom effect and this is a print studio.
+ */
+@utility product-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-sheen::after {
+  content: '';
+  position: absolute;
+  inset: -20% -60%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-42%, 0, 0);
+  background: linear-gradient(
+    104deg,
+    rgb(255 255 255 / 0) 42%,
+    rgb(255 255 255 / 0.28) 50%,
+    rgb(255 255 255 / 0) 58%
+  );
+  transition:
+    transform 900ms var(--ease-standard),
+    opacity var(--d-base) var(--ease-standard);
+}
+
+.group:hover .product-sheen::after {
+  opacity: 1;
+  transform: translate3d(42%, 0, 0);
+}
+
+@utility product-bright {
+  transition: filter var(--d-slower) var(--ease-standard);
+}
+
+.group:hover .product-bright {
+  filter: brightness(1.045) contrast(1.015);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .product-lift,
+  .group:focus-within .product-lift {
+    transform: none;
+  }
+
+  .product-sheen::after {
+    display: none;
+  }
+
+  .group:hover .product-bright {
+    filter: none;
+  }
+}
+
+[data-motion-preference='reduced'] .group:hover .product-lift,
+[data-motion-preference='reduced'] .group:focus-within .product-lift {
+  transform: none;
+}
+
+[data-motion-preference='reduced'] .product-sheen::after {
+  display: none;
+}
+
+[data-motion-preference='reduced'] .group:hover .product-bright {
+  filter: none;
+}
+
+/* -----------------------------------------------------------------------
+ * Magnetic controls
+ *
+ * The wrapper reaches 10px past its own edge so `pointerenter` fires while the
+ * cursor is still approaching rather than at the moment it crosses the button.
+ * Modest on purpose: the ring is live to pointer events, and a generous one
+ * would sit over its neighbours.
+ * --------------------------------------------------------------------- */
+
+.magnetic {
+  position: relative;
+  will-change: transform;
+}
+
+.magnetic::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
 }
