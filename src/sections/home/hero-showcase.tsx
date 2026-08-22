@@ -1,63 +1,81 @@
 'use client';
 
 import Image from 'next/image';
-import { m, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import {
-  useCallback,
-  useEffect,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from 'react';
+  animate,
+  m,
+  useAnimationFrame,
+  useMotionValue,
+  useMotionValueEvent,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion';
+import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 
 import { heroProducts } from '@/content/home';
-import { useBreakpoint, useMediaQuery } from '@/hooks/use-media-query';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { easing, pointer } from '@/lib/theme/animations';
 import { useReducedMotion } from '@/providers/motion-provider';
 import { cn } from '@/lib/utils';
 
 /**
- * The hero's media slot: five products on a floating stage.
+ * The hero's media slot: the catalogue on a carousel, turning.
  *
- * ## What this replaced, and why
+ * ## The shape
  *
- * Two vertical marquees of equally-sized tiles. The criticism of it was correct
- * on every count and worth writing down, because each fault has a specific
- * cause: it read as a gallery because sixteen tiles at one size have no subject;
- * it looked flat because every tile sat on the same plane; it had no flow
- * because a linear translate at constant speed is the one motion with no
- * beginning, middle or end; and it told no story because a loop cannot.
+ * Five prints mounted on the face of a cylinder, evenly spaced around it, with
+ * the cylinder turning slowly on its vertical axis. The piece crossing the
+ * front is the subject — nearest the camera, so perspective alone makes it the
+ * largest thing on the stage — and the rest fall away around the curve, turning
+ * edge-on at the sides and showing their blank reverse as they pass behind.
  *
- * The fix for all four is the same idea: **one product at a time is the
- * subject**, the others are depth behind it, and the subject changes.
+ * That is one rigid body, not five animations. Every card's position, size and
+ * facing is a consequence of a single number — the ring's angle — which is why
+ * they can never drift out of formation, and why the whole thing costs one
+ * `rotateY` per frame on the compositor.
  *
- * ## The stage
+ *     container-type: inline-size          the stage; all geometry is `cqw`
+ *       - perspective: 175cqw              the camera
+ *           - tilt        rotateX/rotateY toward the pointer, spring-damped
+ *               - ring    rotateY(theta), driven by the frame loop
+ *                   - arm x5   rotateY(i * 72deg) translateZ(radius)
+ *                         - card   front face + blank reverse, back face hidden
  *
- *     perspective: 1400px            the wrapper
- *       └ tilt          rotateX/rotateY toward the pointer, spring-damped, ≤6°
- *           ├ glow      the light the pieces sit in
- *           └ card ×5   each at a fixed home in Z, one advanced to the front
+ * ## Why the geometry is in `cqw`
  *
- * Each card owns a home position in 3D — scattered across x, y and translateZ,
- * turned a few degrees on Y so nothing is square to the camera. When a card is
- * featured it comes forward to `translateZ(90px)`, squares up, brightens and
- * grows; when it is not, it returns home. So the composition never rearranges,
- * it just changes which piece is in the light. That is the production journey
- * the brief asks for, told with one moving part instead of five.
+ * `translateZ` cannot take a percentage, so a ring built in pixels is a ring
+ * that only looks right at one stage size — and this stage is a grid column,
+ * which is 349px at the `lg` breakpoint and 509px at the container's cap. With
+ * the stage declared a query container, every distance in the rig (card width,
+ * radius, and the camera's own distance) is a share of the stage's width, so
+ * the composition is identical at every size and there is no measuring, no
+ * `ResizeObserver`, and no first-frame flash while JavaScript works out how big
+ * the box is.
  *
- * ## Three transforms, three elements
+ * The camera distance has to scale with the rest of it or the depth changes
+ * with the viewport: a fixed `perspective: 1400px` over a 349px ring is nearly
+ * orthographic, and over a 900px ring it is a fisheye.
  *
- * Slot, float and hover-lift are three independent transforms on the same card,
- * and CSS gives an element exactly one `transform`. So they are nested rather
- * than merged: the outer element carries the Framer slot, the middle carries the
- * CSS float keyframe, the inner carries the hover lift. Trying to compose them
- * on one node is how the float ends up cancelling the layout.
+ * ## Why it turns continuously
+ *
+ * A step-and-hold carousel spends most of its life motionless and the rest of
+ * it lurching. Constant angular velocity has no start and no stop to notice, so
+ * there is nothing to catch the eye except the thing you want caught — a piece
+ * swelling into the front position and shrinking away again. The rhythm comes
+ * from the geometry rather than from a timer: at one revolution per 34 seconds
+ * each product owns the front of the stage for about seven of them.
+ *
+ * Nothing snaps, so nothing has to un-snap when a visitor interferes. Hovering
+ * eases the ring to a standstill instead of stopping it dead; dragging turns it
+ * directly; clicking a card runs it to the front. All three write to the same
+ * angle.
  *
  * ## Cost
  *
- * Five images and no WebGL. Every animated property is `transform` or `opacity`,
- * so the whole thing is compositor work — no layout, no paint. The featured
- * All five images are eager — see `loadingProps`; a card that is about to become
- * the subject cannot afford to load late.
+ * Five images, no WebGL, no measurement. Per frame: one `rotateY` on the ring,
+ * and a `scale`/`opacity` pair per card derived from the same angle — all
+ * transform and opacity, so all compositor, no layout and no paint.
  */
 
 /**
@@ -66,20 +84,16 @@ import { cn } from '@/lib/utils';
  * A photograph pinned edge-to-edge in a rounded rectangle is a picture of a
  * thing. The same photograph on a paper margin, inside a hairline, with a second
  * hairline around the image itself, is a *print* — mounted, the way a studio
- * presents work. That is the entire difference between the flat tiles this
- * replaced and something that looks considered, and it costs two borders and
- * eight pixels of padding.
- *
- * The margin scales with the card, because it is padding on an element the
- * subject transform already scales: 8px at rest, 12px on the featured card. A
- * mount that stayed 8px while the print grew by half would read as a mistake.
+ * presents work. That is the entire difference between a flat tile and
+ * something that looks considered, and it costs two borders and eight pixels of
+ * padding.
  *
  * The subject's edge is `gold-500` at 45%, everything else `ink-800` at 12%.
  * That is the only place the accent appears in the hero, and it does the same
  * job as the caption — it says which one you are meant to be looking at.
  */
 const MOUNT = {
-  mat: 'relative block rounded-[5px] bg-paper-50 p-2',
+  mat: 'relative block rounded-[5px] bg-paper-50 p-2 [backface-visibility:hidden]',
   edge: 'ring-1 ring-ink-800/12',
   edgeFeatured: 'ring-1 ring-gold-500/45',
   window: 'relative block overflow-hidden rounded-[2px] bg-paper-200 ring-1 ring-ink-800/[0.07]',
@@ -90,10 +104,11 @@ const MOUNT = {
  *
  * All five are eager, and that is a fix rather than a default. Lazy is right for
  * a card below the fold; these are all above it, and each one *becomes the
- * largest element on the page* the moment the cycle turns to it. With the
- * supporting four lazy, every rotation painted a new large image late and reset
- * Largest Contentful Paint with it — measured at 4,520ms on a 768px viewport,
- * against 1,132ms on desktop where the subject happened to be the eager one.
+ * largest element on the page* every time the ring brings it round. With the
+ * supporting four lazy, every revolution painted a new large image late and
+ * reset Largest Contentful Paint with it — measured at 4,520ms on a 768px
+ * viewport, against 1,132ms on desktop where the subject happened to be the
+ * eager one.
  *
  * Only the first gets `priority`: that adds a preload hint, and five preload
  * hints compete with each other and with the fonts. The rest simply do not wait.
@@ -102,44 +117,83 @@ function loadingProps(index: number) {
   return index === 0 ? ({ priority: true } as const) : ({ loading: 'eager' } as const);
 }
 
-/**
- * Where each card lives when it is not the subject. Index-matched to
- * `heroProducts`.
- *
- * `x` and `y` are percentages **of the stage**, which is only true because the
- * element they are applied to is the size of the stage. That is the whole reason
- * the positioner and the sizer are two separate elements: `translateX(-35%)`
- * resolves against the *transformed element's own width*, so putting these on
- * the card itself made every offset a fraction of a card rather than a fraction
- * of the stage — the ring collapsed to a cluster and all four supporting cards
- * hid behind the subject. Sized to the stage, the percentages mean what they say.
- */
-const HOME = [
-  { x: '-32%', y: '-26%', z: -300, rotY: 16, rotX: 5, opacity: 0.62 },
-  { x: '31%', y: '-22%', z: -220, rotY: -14, rotX: 4, opacity: 0.72 },
-  { x: '-34%', y: '21%', z: -150, rotY: 12, rotX: -4, opacity: 0.82 },
-  { x: '33%', y: '27%', z: -340, rotY: -18, rotX: -5, opacity: 0.58 },
-  { x: '-1%', y: '-34%', z: -250, rotY: 7, rotX: 6, opacity: 0.68 },
-] as const;
+const COUNT = heroProducts.length;
 
-/** Where the subject stands. Slightly above centre, so the caption sits close. */
-const FRONT = { x: '0%', y: '-3%', z: 100, rotY: -5, rotX: 2, opacity: 1 } as const;
+/** Angular spacing between neighbours on the ring. 72 degrees for five. */
+const STEP = 360 / COUNT;
 
 /**
- * Card width as a share of the stage, and how much bigger the subject gets.
+ * One full revolution.
  *
- * Scale rather than an animated `width`: width is a layout property and would
- * reflow five cards every frame for 1.1 seconds; scale is a transform and rides
- * on the compositor with the rest of the move.
+ * 38 seconds is about 7.6 per product. Faster than roughly 20s and the ring
+ * stops being scenery and starts demanding attention; slower than about 50s and
+ * a visitor who scrolls past in ten seconds never sees a second product.
  */
-const CARD_WIDTH = '43%';
-const FEATURED_SCALE = 1.5;
+const REVOLUTION_MS = 38_000;
 
-/** How long each product holds the light. */
-const DWELL_MS = 4200;
+/**
+ * The cam.
+ *
+ * A ring at constant angular velocity has a problem the reference for this
+ * component does not: for most of every step, *two* cards straddle the front
+ * and neither is the subject. Stepping and holding instead would fix it and
+ * bring back the lurch.
+ *
+ * So the ring turns through detents. Its speed is modulated by the cosine of
+ * its own angle against the card spacing, which puts a minimum exactly where a
+ * card is square to the camera and a maximum exactly between two of them: the
+ * ring eases as a piece comes round, all but parks while it is there, then
+ * swings on. At 0.62 the speed ranges from 0.38x to 1.62x, which spends about
+ * seventy per cent of each step with one card unambiguously in front — five
+ * seconds of stillness and two of travel — and never once reaches zero.
+ *
+ * It is a velocity *field*, a function of position rather than of time, which
+ * is what lets a drag or a click move the ring anywhere without any of this
+ * needing to know: wherever the ring is let go, it is already on the cam.
+ */
+const DETENT = 0.62;
 
-/** Peak stage tilt, degrees. Small — this should be felt, not watched. */
-const TILT = { x: 4, y: 6 } as const;
+/**
+ * Base speed, compensated for the cam.
+ *
+ * Time to cross a full turn is the integral of dθ/v, and for this velocity
+ * field that works out to the naive figure divided by √(1 − DETENT²) — 27%
+ * longer here. Dividing it back out is what keeps `REVOLUTION_MS` an honest
+ * number rather than an input to guess with.
+ */
+const DEG_PER_MS = 360 / REVOLUTION_MS / Math.sqrt(1 - DETENT ** 2);
+
+/**
+ * Time constant for the ring reaching, or leaving, a standstill.
+ *
+ * The pause is exponential rather than instant: a carousel that stops dead
+ * under the cursor reads as broken, and one that restarts dead reads as jumpy.
+ * 260ms settles in about two thirds of a second — long enough to feel like
+ * inertia, short enough to obey.
+ */
+const SPIN_EASE_MS = 260;
+
+/** Peak pointer tilt of the whole rig, degrees. Small — felt, not watched. */
+const TILT = { x: 5, y: 4 } as const;
+
+/** Drag sensitivity: degrees of ring per pixel of pointer travel. */
+const DRAG_DEG_PER_PX = 0.26;
+
+/** Past this much travel the pointer was turning the ring, and the release is not a click. */
+const DRAG_SLOP = 6;
+
+/**
+ * Extra scale on the piece crossing the front, over and above what perspective
+ * already gives it.
+ *
+ * Perspective alone already makes the front card about 1.6x the ones at the
+ * back at this camera distance. This is the last eighth — enough that the
+ * subject stays unambiguous through the fast part of the swing, where two
+ * cards are both near the front and the widest photograph can otherwise look
+ * like the biggest one. Small enough that it never reads as a separate
+ * animation layered on top of the turn.
+ */
+const SPOTLIGHT = 0.12;
 
 export interface HeroShowcaseProps {
   className?: string;
@@ -147,51 +201,40 @@ export interface HeroShowcaseProps {
 
 export function HeroShowcase({ className }: HeroShowcaseProps) {
   const reduced = useReducedMotion();
-  const isDesktop = useBreakpoint('lg');
+
+  /**
+   * The ring's angle, in degrees, and the only piece of state the composition
+   * has. Everything else — which card is the subject, how big each one is, how
+   * bright, which way it faces — is a pure function of this number.
+   *
+   * It lives here rather than in `Ring` because the caption reads it too.
+   */
+  const rotation = useMotionValue(0);
+
   const [featured, setFeatured] = useState(0);
-  const [held, setHeld] = useState(false);
+  const featuredRef = useRef(0);
 
   /*
-    The cycle. Paused while a pointer is on the stage — the visitor is looking at
-    something specific and moving it out from under them is the rudest thing an
-    auto-advancing component can do. Also paused when the tab is hidden, so a
-    backgrounded page is not re-rendering five cards every four seconds.
+    The subject is whichever card is nearest the front, which changes once every
+    72 degrees — about once every seven seconds. Deriving it here rather than
+    tracking it separately is what keeps the caption and the composition from
+    ever disagreeing: there is nothing to keep in sync.
+
+    This fires on every frame the ring moves and sets state on roughly one in
+    four hundred of them; the ref is what makes the other 399 free.
   */
-  useEffect(() => {
-    if (reduced || held) return;
-
-    let timer: ReturnType<typeof setInterval> | undefined;
-    const start = () => {
-      timer ??= setInterval(() => setFeatured((n) => (n + 1) % heroProducts.length), DWELL_MS);
-    };
-    const stop = () => {
-      if (timer) clearInterval(timer);
-      timer = undefined;
-    };
-    const onVisibility = () => (document.hidden ? stop() : start());
-
-    document.addEventListener('visibilitychange', onVisibility);
-    start();
-    return () => {
-      stop();
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [reduced, held]);
+  useMotionValueEvent(rotation, 'change', (deg) => {
+    const next = (((Math.round(-deg / STEP) % COUNT) + COUNT) % COUNT);
+    if (next === featuredRef.current) return;
+    featuredRef.current = next;
+    setFeatured(next);
+  });
 
   const product = heroProducts[featured];
 
   return (
     <div className={cn('relative', className)}>
-      {isDesktop ? (
-        <Stage
-          featured={featured}
-          reduced={reduced}
-          onHoldChange={setHeld}
-          onPick={setFeatured}
-        />
-      ) : (
-        <MobileDeck featured={featured} reduced={reduced} onPick={setFeatured} />
-      )}
+      <Ring rotation={rotation} featured={featured} reduced={reduced} />
 
       {/*
         The caption. This is where the hierarchy is actually *stated* — the
@@ -201,7 +244,7 @@ export function HeroShowcase({ className }: HeroShowcaseProps) {
       */}
       <div className="mt-6 flex items-baseline gap-4 lg:mt-8">
         <span aria-hidden className="font-mono text-caption tabular-nums text-gold-700">
-          {String(featured + 1).padStart(2, '0')}/{String(heroProducts.length).padStart(2, '0')}
+          {String(featured + 1).padStart(2, '0')}/{String(COUNT).padStart(2, '0')}
         </span>
         <div className="min-w-0 flex-1">
           {/* `key` on the name is what makes it re-enter rather than cross-fade
@@ -236,53 +279,216 @@ export function HeroShowcase({ className }: HeroShowcaseProps) {
 }
 
 /* -------------------------------------------------------------------------
- * Desktop — the 3D stage
+ * The ring
  * ---------------------------------------------------------------------- */
 
-function Stage({
+function Ring({
+  rotation,
   featured,
   reduced,
-  onHoldChange,
-  onPick,
 }: {
+  rotation: MotionValue<number>;
   featured: number;
   reduced: boolean;
-  onHoldChange: (held: boolean) => void;
-  onPick: (index: number) => void;
 }) {
   const finePointer = useMediaQuery('(pointer: fine)');
   const tilting = finePointer && !reduced;
 
+  /*
+    Pointer tilt, on its own element above the ring so it can never change which
+    card is at the front — the caption is derived from the ring's angle alone,
+    and a pointer that could nudge the subject would make the two disagree.
+  */
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const px = useSpring(rawX, pointer.spring);
   const py = useSpring(rawY, pointer.spring);
-  const rotateY = useTransform(px, (v) => v * TILT.y);
-  const rotateX = useTransform(py, (v) => v * -TILT.x);
+  const tiltY = useTransform(px, (v) => v * TILT.y);
+  const tiltX = useTransform(py, (v) => v * -TILT.x);
+
+  /*
+    Current and wanted spin rate, as a 0…1 multiplier of `DEG_PER_MS`. Refs
+    rather than state: these change on hover and on every frame of a drag, and
+    none of it is anything React needs to know about.
+  */
+  const speed = useRef(1);
+  const wanted = useRef(1);
+
+  /* The two ways the frame loop hands the angle over to someone else. */
+  const dragging = useRef(false);
+  const snapping = useRef(false);
+
+  const drag = useRef({ lastX: 0, travel: 0 });
+  const suppressClick = useRef(false);
+  /** The running snap, so a hand on the ring can take it back mid-flight. */
+  const snap = useRef<ReturnType<typeof animate> | null>(null);
+
+  useAnimationFrame((_, delta) => {
+    if (reduced) return;
+
+    // A backgrounded tab stops firing frames entirely; the first one after it
+    // comes back carries the whole gap, which would teleport the ring.
+    const dt = Math.min(delta, 64);
+    const target = dragging.current || snapping.current ? 0 : wanted.current;
+
+    // Frame-rate independent exponential approach: the same settle in the same
+    // wall-clock time at 60Hz and at 144Hz.
+    speed.current += (target - speed.current) * (1 - Math.exp(-dt / SPIN_EASE_MS));
+    if (speed.current < 0.0005) return;
+
+    const theta = rotation.get();
+    // The cam. Cosine is even, so it does not care which way the angle runs;
+    // it is 1 wherever a card is square to the camera and -1 between two.
+    const cam = 1 - DETENT * Math.cos((2 * Math.PI * theta) / STEP);
+
+    // Wrapped, so the angle stays inside one turn however long the page is
+    // left open. -370 and -10 degrees are the same picture, so it is invisible
+    // — and 360 is a whole number of card spacings, so the cam does not jump.
+    let next = theta - DEG_PER_MS * dt * speed.current * cam;
+    if (next <= -360) next += 360;
+    rotation.set(next);
+  });
+
+  /** Run the ring until `index` is at the front, the short way round. */
+  const snapTo = useCallback(
+    (index: number) => {
+      const from = rotation.get();
+      const delta = ((((-index * STEP - from) % 360) + 540) % 360) - 180;
+      if (Math.abs(delta) < 0.5) return;
+
+      snap.current?.stop();
+      snapping.current = true;
+      snap.current = animate(rotation, from + delta, {
+        duration: reduced ? 0 : 0.85,
+        ease: easing.standard,
+        onComplete: () => {
+          snapping.current = false;
+          snap.current = null;
+        },
+      });
+    },
+    [reduced, rotation],
+  );
+
+  const handlePick = useCallback(
+    (index: number) => {
+      // The release that ends a drag also fires a click on whatever card was
+      // under it. Turning the ring is not choosing a card.
+      if (suppressClick.current) {
+        suppressClick.current = false;
+        return;
+      }
+      snapTo(index);
+    },
+    [snapTo],
+  );
+
+  const handleEnter = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    // Touch reports an enter on tap and never a matching leave, which would
+    // stop the ring for good on a phone.
+    if (event.pointerType !== 'mouse') return;
+    wanted.current = 0;
+  }, []);
 
   const handleMove = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       if (event.pointerType !== 'mouse') return;
+
+      if (dragging.current) {
+        const dx = event.clientX - drag.current.lastX;
+        drag.current.lastX = event.clientX;
+        drag.current.travel += Math.abs(dx);
+        rotation.set(rotation.get() + dx * DRAG_DEG_PER_PX);
+        return;
+      }
+
+      if (!tilting) return;
       const box = event.currentTarget.getBoundingClientRect();
       if (!box.width || !box.height) return;
       rawX.set((event.clientX - box.left) / box.width - 0.5);
       rawY.set((event.clientY - box.top) / box.height - 0.5);
     },
-    [rawX, rawY],
+    [rawX, rawY, rotation, tilting],
   );
 
-  const handleLeave = useCallback(() => {
-    rawX.set(0);
-    rawY.set(0);
-    onHoldChange(false);
-  }, [rawX, rawY, onHoldChange]);
+  const handleDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'mouse') return;
+
+    // A hand on the ring outranks a snap that is still running: leaving it to
+    // finish means two writers on one angle, and the drag loses every frame.
+    snap.current?.stop();
+    snap.current = null;
+    snapping.current = false;
+
+    dragging.current = true;
+    suppressClick.current = false;
+    drag.current = { lastX: event.clientX, travel: 0 };
+  }, []);
+
+  /*
+    No `setPointerCapture` here, deliberately. Capture retargets the `pointerup`
+    to the capturing element, which moves the synthesised `click` up to this div
+    — and the card buttons would stop being clickable at all. The cost is that a
+    drag ends when the pointer leaves the stage, which is the right behaviour
+    anyway.
+  */
+  const endDrag = useCallback(() => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    suppressClick.current = drag.current.travel > DRAG_SLOP;
+  }, []);
+
+  const handleLeave = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.pointerType !== 'mouse') return;
+      endDrag();
+      rawX.set(0);
+      rawY.set(0);
+      wanted.current = 1;
+    },
+    [endDrag, rawX, rawY],
+  );
 
   return (
+    /*
+      The stage, and the query container every distance in the rig is measured
+      against. `aspect-square` gives it a definite height; `container-type:
+      inline-size` contains only the inline axis, so that height still comes
+      from the ratio.
+
+      Three numbers set the whole composition, and each is a share of the stage:
+
+      - **card 58** against **radius 41** is what makes it read as a carousel
+        rather than as five separate panels. The chord between neighbours on the
+        ring is 2·R·sin(36°) = 1.18·R = 48; a card wider than that overlaps the
+        one beside it, so the ring closes up instead of leaving a hole in the
+        middle of every transition.
+      - **camera 180** sets the depth. The front card lands at 1.30× the size of
+        one at the same distance as the axis, before the spotlight adds its
+        tenth — enough separation that the subject is obvious, not so much that
+        the flanks distort into a fisheye.
+
+      The tightest constraint is vertical, and it is the business cards: they
+      are the one 1:1 photograph, so the front card is as tall as it is wide.
+      58 × 1.30 × 1.12 is 84% of the stage, which leaves 40px of air top and
+      bottom at the container's cap — the float uses 10 of them.
+
+      Below `lg` the card grows and the ring tightens: a phone has a third of
+      the width, and the desktop numbers there put the flanking cards off the
+      side of the screen rather than at its edges.
+    */
     <div
-      className="relative aspect-square w-full"
-      style={tilting ? { perspective: '1400px' } : undefined}
-      onPointerMove={tilting ? handleMove : undefined}
-      onPointerEnter={() => onHoldChange(true)}
+      className={cn(
+        'relative aspect-square w-full select-none',
+        '[--ring-card:64cqw] [--ring-radius:42cqw] [--ring-camera:200cqw]',
+        'lg:[--ring-card:58cqw] lg:[--ring-radius:41cqw] lg:[--ring-camera:180cqw]',
+        tilting && 'cursor-grab active:cursor-grabbing',
+      )}
+      style={{ containerType: 'inline-size', touchAction: 'pan-y' }}
+      onPointerEnter={handleEnter}
+      onPointerMove={handleMove}
+      onPointerDown={handleDown}
+      onPointerUp={endDrag}
       onPointerLeave={handleLeave}
     >
       {/* The light the pieces stand in. Never animated — it is the ground, and a
@@ -296,237 +502,206 @@ function Stage({
         }}
       />
 
-      <m.div
+      {/* The camera. Its distance scales with the stage, so the depth of the
+          ring is the same picture at 349px and at 509px. */}
+      <div
         className="absolute inset-0"
-        style={tilting ? { rotateX, rotateY, transformStyle: 'preserve-3d' } : undefined}
+        style={{ perspective: 'var(--ring-camera)', perspectiveOrigin: '50% 48%' }}
       >
-        {heroProducts.map((item, index) => {
-          const isFeatured = index === featured;
-          const slot = isFeatured ? FRONT : HOME[index];
-          const move = reduced
-            ? { duration: 0 }
-            : { duration: 1.1, ease: easing.standard };
-
-          return (
-            /* The positioner. Exactly the size of the stage, so its percentage
-               translations are stage-relative. It carries everything except
-               size. */
-            <m.div
-              key={item.id}
-              className="pointer-events-none absolute inset-0 flex items-center justify-center"
-              style={{ transformStyle: 'preserve-3d', zIndex: isFeatured ? 20 : 10 - index }}
-              initial={false}
-              animate={{
-                x: slot.x,
-                y: slot.y,
-                z: slot.z,
-                rotateX: slot.rotX,
-                rotateY: slot.rotY,
-                opacity: slot.opacity,
-              }}
-              transition={move}
-            >
-              {/* The sizer. One fixed width for every card; only the subject
-                  scales, so nothing reflows. */}
-              <m.div
-                className="pointer-events-auto relative"
-                style={{ width: CARD_WIDTH, transformStyle: 'preserve-3d' }}
-                initial={false}
-                animate={{ scale: isFeatured ? FEATURED_SCALE : 1 }}
-                transition={move}
-              >
-                <Card
-                  item={item}
-                  index={index}
-                  featured={isFeatured}
-                  reduced={reduced}
-                  onPick={() => onPick(index)}
-                />
-              </m.div>
-            </m.div>
-          );
-        })}
-      </m.div>
+        {/* The tilt — the whole rig leaning toward the pointer. */}
+        <m.div
+          className="absolute inset-0 [transform-style:preserve-3d]"
+          style={tilting ? { rotateX: tiltX, rotateY: tiltY } : undefined}
+        >
+          {/* The ring itself. One transform, five cards. */}
+          <m.div
+            className="absolute inset-0 [transform-style:preserve-3d]"
+            /* `will-change` holds a compositor layer open, which is exactly
+               right for something that turns on every frame and pure waste for
+               something that never moves. */
+            style={{ rotateY: rotation, willChange: reduced ? undefined : 'transform' }}
+          >
+            {heroProducts.map((item, index) => (
+              <RingCard
+                key={item.id}
+                item={item}
+                index={index}
+                rotation={rotation}
+                featured={index === featured}
+                reduced={reduced}
+                onPick={handlePick}
+              />
+            ))}
+          </m.div>
+        </m.div>
+      </div>
     </div>
   );
 }
 
+/* -------------------------------------------------------------------------
+ * One product on the ring
+ * ---------------------------------------------------------------------- */
+
 /**
- * One product card.
+ * A card, its arm, and its two faces.
  *
- * Two nested elements under the Framer slot: the float, and the hover lift.
- * Each owns its own `transform`, because an element has only one.
+ * The arm is stage-sized and carries `rotateY(i * 72deg) translateZ(radius)`,
+ * which is what puts the card on the surface of the cylinder — turn to face
+ * outward, then step out along the direction you are now facing. It never
+ * changes; the ring above it is the only thing that moves.
  *
- * It is a `<button>` because it does something — picking a card makes it the
- * subject — and because that is the only way a keyboard reaches the same
- * affordance a pointer gets. The label is `sr-only` prose rather than the name
- * alone, so the action is announced as what it is.
+ * Everything the card does *as it comes round* is a pure function of its angle
+ * from the front: it swells, it brightens, and past ninety degrees it shows its
+ * back. All of it reads the ring's angle through `useTransform`, so it updates
+ * on the same frame as the turn without a single React render.
  */
-function Card({
+function RingCard({
   item,
   index,
+  rotation,
   featured,
   reduced,
   onPick,
 }: {
   item: (typeof heroProducts)[number];
   index: number;
+  rotation: MotionValue<number>;
   featured: boolean;
-  reduced: boolean;
-  onPick: () => void;
-}) {
-  return (
-    <div
-      className={reduced ? undefined : 'animate-float-slow'}
-      /* Offsets so five cards never bob in lockstep — in lockstep they read as
-         one object, and the illusion of five separate pieces is gone. */
-      style={reduced ? undefined : { animationDelay: `${index * 1.35}s` }}
-    >
-      <button
-        type="button"
-        onClick={onPick}
-        aria-pressed={featured}
-        className={cn(
-          'group/card block w-full rounded-[3px] text-left',
-          'motion-lift hover:-translate-y-1',
-          'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-500',
-        )}
-      >
-        <span className="sr-only">Show {item.name}</span>
-
-        {/* The mount. A photograph pinned edge-to-edge is a picture; the same
-            photograph on a paper margin inside a hairline is a *print*, and this
-            is a print studio. See `MOUNT`. */}
-        <span
-          aria-hidden
-          className={cn(
-            MOUNT.mat,
-            'motion-lift',
-            featured ? MOUNT.edgeFeatured : MOUNT.edge,
-            featured
-              ? 'shadow-[0_2px_4px_rgba(38,34,54,0.06),0_18px_36px_-18px_rgba(38,34,54,0.28),0_48px_90px_-40px_rgba(38,34,54,0.34)]'
-              : 'shadow-[0_1px_2px_rgba(38,34,54,0.05),0_14px_30px_-18px_rgba(38,34,54,0.22)]',
-            'group-hover/card:shadow-[0_4px_8px_rgba(38,34,54,0.07),0_26px_50px_-20px_rgba(38,34,54,0.32),0_60px_110px_-45px_rgba(38,34,54,0.36)]',
-          )}
-        >
-          <span className={MOUNT.window} style={{ aspectRatio: item.aspect }}>
-          <Image
-            src={item.image.src}
-            alt=""
-            fill
-            {...loadingProps(index)}
-            sizes="(min-width: 1024px) 30vw, 78vw"
-            className="object-cover"
-          />
-
-          {/* A raking sheen across the stock. The one thing that says these are
-              printed surfaces rather than pictures of them. */}
-          <span
-            className="pointer-events-none absolute inset-0 opacity-70"
-            style={{
-              backgroundImage:
-                'linear-gradient(114deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.30) 52%, rgba(255,255,255,0) 62%)',
-            }}
-          />
-          </span>
-        </span>
-      </button>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------
- * Mobile — a different composition, not the stage scaled down
- * ---------------------------------------------------------------------- */
-
-/**
- * Three cards deep, offset and scaled, with the subject in front.
- *
- * The desktop stage scatters five cards across x, y and Z because it has 780px
- * of height and a pointer to light them with. A phone has neither: five
- * scattered cards at 390px is five thumbnails, and there is no cursor to tilt
- * toward. So the depth runs straight back instead of outward — the subject, and
- * two pieces stacked behind it — and the interaction is a tap on the deck rather
- * than a hover.
- */
-function MobileDeck({
-  featured,
-  reduced,
-  onPick,
-}: {
-  featured: number;
   reduced: boolean;
   onPick: (index: number) => void;
 }) {
-  const count = heroProducts.length;
+  /** How far this card is from the front: signed degrees, -180…180. */
+  const offset = useTransform(
+    rotation,
+    (deg) => ((((deg + index * STEP) % 360) + 540) % 360) - 180,
+  );
+
+  /** 1 square-on to the camera, 0 edge-on, negative once it is facing away. */
+  const facing = useTransform(offset, (deg) => Math.cos((deg * Math.PI) / 180));
+
+  /* Raised to a power, so the swell is a spotlight rather than a slope: a card
+     36 degrees off the front has already given up two thirds of it. */
+  const scale = useTransform(facing, (f) => 1 + SPOTLIGHT * Math.max(0, f) ** 2.2);
+
+  /*
+    Two slopes, meeting at the edge-on position.
+
+    In front of the axis a card is a print and reads at nearly full strength.
+    Behind it, it is the blank back of one, and an opacity that reads as depth
+    on a photograph reads as a white slab on a plain sheet — worse still on the
+    far side, where a card is nearly square-on to the camera again and so at its
+    widest. So the back hemisphere keeps falling, to 0.06 at the far side of the
+    ring. Never quite to zero: those pieces are what fill the gap between two
+    cards mid-swing, and without them the ring opens a hole every time it turns.
+  */
+  const opacity = useTransform(
+    facing,
+    (f) => 0.34 + 0.66 * Math.max(0, f) ** 0.9 - 0.28 * Math.max(0, -f),
+  );
 
   return (
-    /*
-      Square, not 4:5. Each product keeps its own ratio, and the widest of them
-      — business cards at 1:1 — is the one that sets how tall the deck needs to
-      be. A 4:5 box was two hundred pixels taller than the tallest card in it, so
-      a brochure at 1000:546 sat marooned in the middle of its own stage.
-    */
-    <div className="relative aspect-square w-full">
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            'radial-gradient(60% 44% at 50% 48%, rgba(193,133,70,0.12), transparent 72%)',
-        }}
-      />
-
-      <button
-        type="button"
-        onClick={() => onPick((featured + 1) % count)}
-        className="absolute inset-0 z-30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-500"
+    <div
+      className="absolute inset-0 flex items-center justify-center [transform-style:preserve-3d]"
+      /* The arm. Stage-sized, so it turns about the centre of the stage rather
+         than about its own card. */
+      style={{ transform: `rotateY(${index * STEP}deg) translateZ(var(--ring-radius))` }}
+    >
+      <m.div
+        className="[transform-style:preserve-3d]"
+        style={{ width: 'var(--ring-card)', scale, opacity }}
       >
-        <span className="sr-only">Show the next product</span>
-      </button>
-
-      {heroProducts.map((item, index) => {
-        // 0 is the subject; 1 and 2 sit behind it; the rest wait off-stage.
-        const depth = (index - featured + count) % count;
-        const parked = depth > 2;
-
-        return (
-          <m.div
-            key={item.id}
-            className="absolute left-1/2 top-1/2 w-[84%]"
-            initial={false}
-            animate={{
-              x: '-50%',
-              y: `calc(-50% + ${depth * 5}%)`,
-              scale: 1 - depth * 0.08,
-              opacity: parked ? 0 : 1 - depth * 0.3,
-              zIndex: count - depth,
+        {/* The float. Offset per card so five never bob in lockstep — in
+            lockstep they read as one object, and the illusion of five separate
+            pieces is gone. Its own element, because an element gets one
+            `transform` and the spotlight above already spent it. */}
+        <div
+          className={cn('[transform-style:preserve-3d]', !reduced && 'animate-float-slow')}
+          style={reduced ? undefined : { animationDelay: `${index * 1.35}s` }}
+        >
+          <button
+            type="button"
+            onClick={() => onPick(index)}
+            /*
+              Keyboard focus brings a card round; a mouse press must not.
+              Chrome focuses a button on `mousedown`, so without the
+              `:focus-visible` test every attempt to drag the ring fired a snap
+              on the way down and then fought the drag for the rest of it.
+            */
+            onFocus={(event) => {
+              if (event.currentTarget.matches(':focus-visible')) onPick(index);
             }}
-            style={{ zIndex: count - depth }}
-            transition={reduced ? { duration: 0 } : { duration: 0.7, ease: easing.standard }}
+            aria-pressed={featured}
+            className={cn(
+              'group/card relative block w-full rounded-[3px] text-left',
+              '[transform-style:preserve-3d]',
+              'motion-lift hover:-translate-y-1',
+              'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-500',
+            )}
           >
+            <span className="sr-only">Show {item.name}</span>
+
+            {/* The front — the print itself, mounted. See `MOUNT`. */}
             <span
               aria-hidden
               className={cn(
                 MOUNT.mat,
-                depth === 0 ? MOUNT.edgeFeatured : MOUNT.edge,
-                'shadow-[0_2px_4px_rgba(38,34,54,0.06),0_20px_40px_-20px_rgba(38,34,54,0.3)]',
+                'motion-lift',
+                featured ? MOUNT.edgeFeatured : MOUNT.edge,
+                featured
+                  ? 'shadow-[0_2px_4px_rgba(38,34,54,0.06),0_18px_36px_-18px_rgba(38,34,54,0.28),0_48px_90px_-40px_rgba(38,34,54,0.34)]'
+                  : 'shadow-[0_1px_2px_rgba(38,34,54,0.05),0_14px_30px_-18px_rgba(38,34,54,0.22)]',
+                'group-hover/card:shadow-[0_4px_8px_rgba(38,34,54,0.07),0_26px_50px_-20px_rgba(38,34,54,0.32),0_60px_110px_-45px_rgba(38,34,54,0.36)]',
               )}
             >
               <span className={MOUNT.window} style={{ aspectRatio: item.aspect }}>
-              <Image
-                src={item.image.src}
-                alt=""
-                fill
-                {...loadingProps(index)}
-                sizes="84vw"
-                className="object-cover"
-              />
+                <Image
+                  src={item.image.src}
+                  alt=""
+                  fill
+                  draggable={false}
+                  {...loadingProps(index)}
+                  sizes="(min-width: 1024px) 30vw, 80vw"
+                  className="object-cover"
+                />
+
+                {/* A raking sheen across the stock. The one thing that says
+                    these are printed surfaces rather than pictures of them. */}
+                <span
+                  className="pointer-events-none absolute inset-0 opacity-70"
+                  style={{
+                    backgroundImage:
+                      'linear-gradient(114deg, rgba(255,255,255,0) 42%, rgba(255,255,255,0.30) 52%, rgba(255,255,255,0) 62%)',
+                  }}
+                />
               </span>
             </span>
-          </m.div>
-        );
-      })}
+
+            {/*
+              The reverse.
+
+              Without it, a card past ninety degrees shows its own photograph
+              mirrored — a certificate with its type running backwards, which
+              reads as a bug rather than as a card. Hiding the back face instead
+              empties half the ring. So each card is given the thing it would
+              actually have: the blank side of the stock, in the same mount.
+            */}
+            <span
+              aria-hidden
+              className={cn(
+                'absolute inset-0 flex items-center justify-center rounded-[5px]',
+                'paper-grain bg-paper-100 ring-1 ring-ink-800/10',
+                '[backface-visibility:hidden] [transform:rotateY(180deg)]',
+                'shadow-[0_10px_24px_-16px_rgba(38,34,54,0.18)]',
+              )}
+            >
+              <span className="font-mono text-[0.5rem] uppercase tracking-[0.42em] text-ink-400/70">
+                Thoorigai
+              </span>
+            </span>
+          </button>
+        </div>
+      </m.div>
     </div>
   );
 }

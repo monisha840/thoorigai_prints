@@ -26,16 +26,17 @@ import { Eyebrow, editorialButton } from './shared';
  * arrives; the photograph is `priority` and is the LCP element (§2.8 — LCP
  * under 2.0s on throttled 4G, and WebGL is never in the critical path).
  *
- * The media slot is `HeroShowcase`: five products on a stage with real depth,
- * one of them featured at a time, the feature advancing on a slow cycle so each
- * piece steps forward into the light and back out.
+ * The media slot is `HeroShowcase`: five products mounted around a cylinder
+ * that turns on its vertical axis, so each piece swells into the front of the
+ * stage, holds the light for a few seconds and falls away around the curve.
  *
- * It replaced, in order, a WebGL sequence, a single photograph, and two vertical
- * marquees. The marquee failed for a reason worth remembering: sixteen tiles at
- * one size on one plane have no subject, so it read as a gallery rather than as
- * a studio. Depth and hierarchy are what fixed it — one card dominant, the rest
- * behind it in Z — and it is CSS perspective rather than WebGL, so it costs
- * five images and no library.
+ * It replaced, in order, a WebGL sequence, a single photograph, two vertical
+ * marquees and a static stage of scattered cards. The marquee failed for a
+ * reason worth remembering: sixteen tiles at one size on one plane have no
+ * subject, so it read as a gallery rather than as a studio. Depth and hierarchy
+ * are what fixed it, and the ring is the strictest form of both — the subject
+ * is simply whatever is nearest the camera. It is CSS perspective rather than
+ * WebGL, so it costs five images and no library.
  */
 export function Hero() {
   return (
@@ -73,8 +74,22 @@ export function Hero() {
           motion, where it provides no context and the layers render flat.
         */}
         <MouseParallax className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
-          {/* Copy — six of twelve columns, the editorial split of §2.6 */}
-          <MouseParallaxLayer depth={0.22} invert className="lg:col-span-6">
+          {/*
+            Copy — seven of twelve columns, the editorial split of §2.6.
+
+            Seven rather than six because of one line of type: "Printing,
+            packaging" is 8.3em wide, which at the display-xl ceiling needs
+            696px, and six columns is 624px at the container's cap. The
+            headline wrapped at every viewport below 1408px. Seven columns is
+            739px, which holds it on one line from `lg` up and let the type
+            grow at the same time.
+
+            The showcase gives up those two columns without losing anything:
+            it is a ring, and its cards sit on a circle wider than the box that
+            defines it, so it reads at the width of its arc rather than the
+            width of its column.
+          */}
+          <MouseParallaxLayer depth={0.22} invert className="lg:col-span-7">
             <FadeUp immediate>
               <Eyebrow>{hero.eyebrow}</Eyebrow>
             </FadeUp>
@@ -139,17 +154,17 @@ export function Hero() {
           </MouseParallaxLayer>
 
           {/*
-            Media bleeds through the 20px gutter on mobile and is contained from
-            lg up — §2.6, "Mobile rules". Ratio is declared on both breakpoints
-            so nothing shifts.
+            The carousel — five of twelve columns from lg up, full width below
+            it, per §2.6's "Mobile rules". Its stage declares a square ratio at
+            both breakpoints, so nothing shifts as the images arrive.
 
-            The frame stays exactly where the layout put it and the photograph
-            moves inside it — §9.3's rule for card media, and the same reason
-            applies here: a frame that moves is a layout that moves. The 1.06
-            scale is the overscan that keeps the frame's edges covered at full
-            deflection; without it the drift exposes the background.
+            The stage is the square; the ring is not. Cards on the flanks of the
+            circle project a little past the stage's edges — into the column gap
+            on the left and the page gutter on the right — which is what keeps a
+            five-column slot reading as wide as the six-column photograph it
+            replaced.
           */}
-          <FadeIn immediate delay={0.2} className="lg:col-span-6">
+          <FadeIn immediate delay={0.2} className="lg:col-span-5">
             <HeroShowcase />
           </FadeIn>
         </MouseParallax>
