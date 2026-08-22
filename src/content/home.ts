@@ -51,10 +51,14 @@ export const hero = {
  * each piece comes round into the front of the stage, holds the light and falls
  * away again — the flow of work coming off a press, rather than a grid.
  *
- * Every card is the same size, and the photograph sits inside it rather than
- * filling it. These five are framed tight in their own files — the brochures
- * begin 7% from the left edge, the business cards 5% from the top — so any
- * single ratio applied as a crop cuts a product in half. See `hero-showcase`.
+ * Every card is the same size, and so is every file behind it: these five live
+ * in `public/img/hero/cards/` and are cut to 6:5 by `scripts/hero-cards.mjs`
+ * before they ship, so the card frame, the stage and the artwork all quote one
+ * ratio and the CSS crops nothing.
+ *
+ * Their own folder, not `/img/catalogue/`: those five filenames are each used
+ * twice on this page, by `heroProducts` and by `featuredProducts` below it, so
+ * changing the carousel through them would have changed the grid as well.
  *
  * ## On the fifth product
  *
@@ -88,10 +92,10 @@ export const heroProducts: readonly HeroProduct[] = [
     name: 'Business cards',
     blurb: 'Offset and digital, with foil, spot UV and metallic line treatments.',
     image: {
-      src: '/img/catalogue/business-cards.webp',
-      alt: 'A stack of printed business cards with one card face up',
-      width: 800,
-      height: 800,
+      src: '/img/hero/cards/business-cards.webp',
+      alt: 'A two-sided business card in navy and gold, front and back',
+      width: 676,
+      height: 563,
     },
   },
   {
@@ -99,10 +103,10 @@ export const heroProducts: readonly HeroProduct[] = [
     name: 'Brochures',
     blurb: 'Folded, saddle-stitched or perfect-bound, on coated and uncoated stock.',
     image: {
-      src: '/img/catalogue/brochures.webp',
-      alt: 'An open multi-page brochure laid flat',
-      width: 1000,
-      height: 546,
+      src: '/img/hero/cards/brochures.webp',
+      alt: 'Trifold and bifold brochure spreads laid flat',
+      width: 662,
+      height: 552,
     },
   },
   {
@@ -110,10 +114,10 @@ export const heroProducts: readonly HeroProduct[] = [
     name: 'Packaging',
     blurb: 'Telescope lids, drawer style, hinged lids and magnetic closures, wrapped and lined.',
     image: {
-      src: '/img/catalogue/rigid-boxes.webp',
-      alt: 'Four rigid box constructions — drawer, sleeve, perforated and patterned',
-      width: 980,
-      height: 799,
+      src: '/img/hero/cards/packaging.webp',
+      alt: 'A rigid lidded box with a foiled label, on a patterned sleeve',
+      width: 498,
+      height: 415,
     },
   },
   {
@@ -121,10 +125,10 @@ export const heroProducts: readonly HeroProduct[] = [
     name: 'Catalogues',
     blurb: 'Case-bound, perfect-bound and centre-pinned, from a single proof copy to a full run.',
     image: {
-      src: '/img/catalogue/books.webp',
-      alt: 'Printed hardback and paperback books stacked and fanned',
-      width: 800,
-      height: 531,
+      src: '/img/hero/cards/catalogues.webp',
+      alt: 'Perfect-bound catalogue spreads, opened flat',
+      width: 489,
+      height: 408,
     },
   },
   {
@@ -132,10 +136,10 @@ export const heroProducts: readonly HeroProduct[] = [
     name: 'Certificates',
     blurb: 'Foiled and embossed, with matching convocation folders and presentation covers.',
     image: {
-      src: '/img/catalogue/certificates.webp',
-      alt: 'A printed certificate with a foiled border and seal',
-      width: 1000,
-      height: 615,
+      src: '/img/hero/cards/certificates.webp',
+      alt: 'A navy certificate of achievement with a gold foiled border and seal',
+      width: 636,
+      height: 530,
     },
   },
 ];

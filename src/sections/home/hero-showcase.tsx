@@ -36,7 +36,7 @@ import { cn } from '@/lib/utils';
  * `rotateY` per frame on the compositor.
  *
  *     container-type: inline-size          the stage; all geometry is `cqw`
- *       - perspective: 175cqw              the camera
+ *       - perspective: 180cqw              the camera
  *           - tilt        rotateX/rotateY toward the pointer, spring-damped
  *               - ring    rotateY(theta), driven by the frame loop
  *                   - arm x5   rotateY(i * 72deg) translateZ(radius)
@@ -63,8 +63,9 @@ import { cn } from '@/lib/utils';
  * it lurching. Constant angular velocity has no start and no stop to notice, so
  * there is nothing to catch the eye except the thing you want caught — a piece
  * swelling into the front position and shrinking away again. The rhythm comes
- * from the geometry rather than from a timer: at one revolution per 34 seconds
- * each product owns the front of the stage for about seven of them.
+ * from the geometry rather than from a timer: the ring turns through detents
+ * (see `DETENT`), so each product all but parks as it comes square to the
+ * camera and swings on afterwards, with no timer anywhere in it.
  *
  * Nothing snaps, so nothing has to un-snap when a visitor interferes. Hovering
  * eases the ring to a standstill instead of stopping it dead; dragging turns it
@@ -81,44 +82,45 @@ import { cn } from '@/lib/utils';
 /**
  * How a card is framed.
  *
- * A photograph pinned edge-to-edge in a rounded rectangle is a picture of a
- * thing. The same photograph centred on a paper mount, inside a hairline, is a
- * *print* — presented the way a studio presents work. That is the entire
- * difference between a flat tile and something that looks considered, and it
- * costs one border and a margin.
+ * A photograph on a paper margin, inside a hairline, is a *print* — presented
+ * the way a studio presents work, rather than a picture of one. The margin is
+ * 6px now rather than 12: with the artwork cut to the card's own ratio the
+ * image fills the window, so the mount is a mount again and not a mat filling
+ * space the photograph could not.
  *
  * The subject's edge is `gold-500` at 45%, everything else `ink-800` at 12%.
  * That is the only place the accent appears in the hero, and it does the same
  * job as the caption — it says which one you are meant to be looking at.
  */
 const MOUNT = {
-  mat: 'relative block rounded-[5px] bg-paper-50 p-3 [backface-visibility:hidden]',
+  mat: 'relative block rounded-[5px] bg-paper-50 p-1.5 [backface-visibility:hidden]',
   edge: 'ring-1 ring-ink-800/12',
   edgeFeatured: 'ring-1 ring-gold-500/45',
-  window: 'relative block',
+  window: 'relative block overflow-hidden rounded-[2px] bg-paper-200',
 } as const;
 
 /**
- * One frame, for all five.
+ * One frame, for all five — and the artwork is cut to it before it ships.
  *
- * Every card was the shape of its own photograph, which ran from 1:1 to 1.83:1
- * — five different rectangles on one ring, and no two the same height as they
- * came round.
+ * The cards were once the shape of their own photographs, which is five
+ * different rectangles on one ring and no two the same height as they come
+ * round. Forcing them into a common frame in CSS is the obvious fix and the
+ * wrong one: `object-cover` crops from the centre by a rule that knows nothing
+ * about what is in the picture, so on tightly-framed product shots it takes the
+ * edge off the product.
  *
- * The obvious fix, a single ratio with `object-cover`, does not survive contact
- * with these particular files: all five are framed tight, and the crop needed
- * to force them into any common shape lands inside the product every time. At
- * 4:3 the brochures lose 13.5% off each side and the left brochure starts 7%
- * in; the business cards lose 12.5% off the top and the upper card starts 5%
- * down. A print studio cannot show half a brochure.
+ * `scripts/hero-cards.mjs` does it upstream instead, where the crop can be
+ * chosen per photograph and the result looked at. The files in
+ * `public/img/hero/cards/` are already 6:5, so by the time this frame is
+ * applied there is nothing left to cut and the print runs card edge to card
+ * edge.
  *
- * So the *card* is uniform and the *print* is not: `object-contain`, centred on
- * the mount, each photograph at its own proportion with paper around it. Which
- * is what matting is, and why the mount exists in the first place. 4:3 is the
- * frame that wastes least across a set running from square to 1.83 — the widest
- * of them fills 73% of its height, the squarest 75% of its width.
+ * 6:5 came out of the five files rather than being imposed on them: four of
+ * them arrive between 1.04 and 1.15, the certificate at 1.36 is the outlier,
+ * and 1.2 is where the worst crop is smallest — 5.7% off each side of the
+ * certificate, which is exactly its dark margin.
  */
-const CARD_RATIO = '4 / 3';
+const CARD_RATIO = '6 / 5';
 
 /**
  * Loading, per card.
@@ -478,10 +480,9 @@ function Ring({
       inline-size` contains only the inline axis, so that height still comes
       from the ratio.
 
-      The stage is 5:4 rather than square because the cards are 4:3 and no
-      longer as tall as they are wide. A square stage left 94px of empty air
-      above and below the front card; 5:4 leaves 43, which is margin rather
-      than a gap, and takes 102px off the height of the hero.
+      The stage matches the card at 6:5. It follows the cards: a square stage
+      under a 6:5 card leaves 74px of dead air above and below the front one,
+      and 6:5 leaves 34 — margin rather than a gap.
 
       Three numbers set the whole composition, and each is a share of the stage:
 
@@ -496,8 +497,8 @@ function Ring({
         the flanks distort into a fisheye.
 
       The vertical check is the front card against the stage: 58 × 1.30 × 1.12
-      is 84% of the stage's width, and at 4:3 that is 63% of its width in
-      height — 321px against a 407px stage at the container's cap, so 43px of
+      is 84% of the stage's width, and at 6:5 that is 70% of its width in
+      height — 357px against a 424px stage at the container's cap, so 34px of
       air top and bottom. The float uses 10 of them.
 
       Below `lg` the card grows and the ring tightens: a phone has a third of
@@ -506,7 +507,7 @@ function Ring({
     */
     <div
       className={cn(
-        'relative aspect-[5/4] w-full select-none',
+        'relative aspect-[6/5] w-full select-none',
         '[--ring-card:60cqw] [--ring-radius:42cqw] [--ring-camera:200cqw]',
         'lg:[--ring-card:58cqw] lg:[--ring-radius:41cqw] lg:[--ring-camera:180cqw]',
         tilting && 'cursor-grab active:cursor-grabbing',
@@ -689,7 +690,7 @@ function RingCard({
                   draggable={false}
                   {...loadingProps(index)}
                   sizes="(min-width: 1024px) 30vw, 80vw"
-                  className="object-contain"
+                  className="object-cover"
                 />
 
                 {/* A raking sheen across the stock. The one thing that says
