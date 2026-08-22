@@ -56,9 +56,26 @@ import { cn } from '@/lib/utils';
  *
  * Five images and no WebGL. Every animated property is `transform` or `opacity`,
  * so the whole thing is compositor work — no layout, no paint. The featured
- * image is `priority`; the rest are lazy, so a visitor downloads the subject and
- * then the supporting cast at leisure.
+ * All five images are eager — see `loadingProps`; a card that is about to become
+ * the subject cannot afford to load late.
  */
+
+/**
+ * Loading, per card.
+ *
+ * All five are eager, and that is a fix rather than a default. Lazy is right for
+ * a card below the fold; these are all above it, and each one *becomes the
+ * largest element on the page* the moment the cycle turns to it. With the
+ * supporting four lazy, every rotation painted a new large image late and reset
+ * Largest Contentful Paint with it — measured at 4,520ms on a 768px viewport,
+ * against 1,132ms on desktop where the subject happened to be the eager one.
+ *
+ * Only the first gets `priority`: that adds a preload hint, and five preload
+ * hints compete with each other and with the fonts. The rest simply do not wait.
+ */
+function loadingProps(index: number) {
+  return index === 0 ? ({ priority: true } as const) : ({ loading: 'eager' } as const);
+}
 
 /**
  * Where each card lives when it is not the subject. Index-matched to
@@ -368,8 +385,7 @@ function Card({
             src={item.image.src}
             alt=""
             fill
-            /* The subject is the LCP candidate; the rest arrive when they can. */
-            priority={index === 0}
+            {...loadingProps(index)}
             sizes="(min-width: 1024px) 30vw, 78vw"
             className="object-cover"
           />
@@ -468,7 +484,7 @@ function MobileDeck({
                 src={item.image.src}
                 alt=""
                 fill
-                priority={index === 0}
+                {...loadingProps(index)}
                 sizes="84vw"
                 className="object-cover"
               />
