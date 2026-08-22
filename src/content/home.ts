@@ -45,11 +45,16 @@ export const hero = {
 } as const;
 
 /* -------------------------------------------------------------------------
- * Hero showcase — five products on a floating stage
+ * Hero showcase — five products on a turning carousel
  *
- * One product is featured at a time and the rest sit behind it in depth. The
- * feature advances on a slow cycle, so each piece steps forward into the light
- * and back out again — the flow of work coming off a press, rather than a grid.
+ * The five are mounted around a cylinder that turns on its vertical axis, so
+ * each piece comes round into the front of the stage, holds the light and falls
+ * away again — the flow of work coming off a press, rather than a grid.
+ *
+ * Every card is the same size, and the photograph sits inside it rather than
+ * filling it. These five are framed tight in their own files — the brochures
+ * begin 7% from the left edge, the business cards 5% from the top — so any
+ * single ratio applied as a crop cuts a product in half. See `hero-showcase`.
  *
  * ## On the fifth product
  *
@@ -75,8 +80,6 @@ export interface HeroProduct {
   /** One line, from `featuredProducts` or `pillars`. */
   blurb: string;
   image: HomeImage;
-  /** The photograph's own ratio, so no tile crops what it is showing. */
-  aspect: string;
 }
 
 export const heroProducts: readonly HeroProduct[] = [
@@ -90,7 +93,6 @@ export const heroProducts: readonly HeroProduct[] = [
       width: 800,
       height: 800,
     },
-    aspect: '1 / 1',
   },
   {
     id: 'brochures',
@@ -102,7 +104,6 @@ export const heroProducts: readonly HeroProduct[] = [
       width: 1000,
       height: 546,
     },
-    aspect: '1000 / 546',
   },
   {
     id: 'packaging',
@@ -114,7 +115,6 @@ export const heroProducts: readonly HeroProduct[] = [
       width: 980,
       height: 799,
     },
-    aspect: '980 / 799',
   },
   {
     id: 'catalogues',
@@ -126,7 +126,6 @@ export const heroProducts: readonly HeroProduct[] = [
       width: 800,
       height: 531,
     },
-    aspect: '800 / 531',
   },
   {
     id: 'certificates',
@@ -138,7 +137,6 @@ export const heroProducts: readonly HeroProduct[] = [
       width: 1000,
       height: 615,
     },
-    aspect: '1000 / 615',
   },
 ];
 

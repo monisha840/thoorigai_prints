@@ -82,22 +82,43 @@ import { cn } from '@/lib/utils';
  * How a card is framed.
  *
  * A photograph pinned edge-to-edge in a rounded rectangle is a picture of a
- * thing. The same photograph on a paper margin, inside a hairline, with a second
- * hairline around the image itself, is a *print* — mounted, the way a studio
- * presents work. That is the entire difference between a flat tile and
- * something that looks considered, and it costs two borders and eight pixels of
- * padding.
+ * thing. The same photograph centred on a paper mount, inside a hairline, is a
+ * *print* — presented the way a studio presents work. That is the entire
+ * difference between a flat tile and something that looks considered, and it
+ * costs one border and a margin.
  *
  * The subject's edge is `gold-500` at 45%, everything else `ink-800` at 12%.
  * That is the only place the accent appears in the hero, and it does the same
  * job as the caption — it says which one you are meant to be looking at.
  */
 const MOUNT = {
-  mat: 'relative block rounded-[5px] bg-paper-50 p-2 [backface-visibility:hidden]',
+  mat: 'relative block rounded-[5px] bg-paper-50 p-3 [backface-visibility:hidden]',
   edge: 'ring-1 ring-ink-800/12',
   edgeFeatured: 'ring-1 ring-gold-500/45',
-  window: 'relative block overflow-hidden rounded-[2px] bg-paper-200 ring-1 ring-ink-800/[0.07]',
+  window: 'relative block',
 } as const;
+
+/**
+ * One frame, for all five.
+ *
+ * Every card was the shape of its own photograph, which ran from 1:1 to 1.83:1
+ * — five different rectangles on one ring, and no two the same height as they
+ * came round.
+ *
+ * The obvious fix, a single ratio with `object-cover`, does not survive contact
+ * with these particular files: all five are framed tight, and the crop needed
+ * to force them into any common shape lands inside the product every time. At
+ * 4:3 the brochures lose 13.5% off each side and the left brochure starts 7%
+ * in; the business cards lose 12.5% off the top and the upper card starts 5%
+ * down. A print studio cannot show half a brochure.
+ *
+ * So the *card* is uniform and the *print* is not: `object-contain`, centred on
+ * the mount, each photograph at its own proportion with paper around it. Which
+ * is what matting is, and why the mount exists in the first place. 4:3 is the
+ * frame that wastes least across a set running from square to 1.83 — the widest
+ * of them fills 73% of its height, the squarest 75% of its width.
+ */
+const CARD_RATIO = '4 / 3';
 
 /**
  * Loading, per card.
@@ -125,11 +146,12 @@ const STEP = 360 / COUNT;
 /**
  * One full revolution.
  *
- * 38 seconds is about 7.6 per product. Faster than roughly 20s and the ring
- * stops being scenery and starts demanding attention; slower than about 50s and
- * a visitor who scrolls past in ten seconds never sees a second product.
+ * 22 seconds, or 4.4 per product: about three seconds with a piece square to
+ * the camera and a second and a half of travel to the next. Slower than this
+ * and someone who scrolls past in ten seconds sees two products; much faster
+ * and the caption starts changing before it can be read.
  */
-const REVOLUTION_MS = 38_000;
+const REVOLUTION_MS = 22_000;
 
 /**
  * The cam.
@@ -452,9 +474,14 @@ function Ring({
   return (
     /*
       The stage, and the query container every distance in the rig is measured
-      against. `aspect-square` gives it a definite height; `container-type:
+      against. The declared ratio gives it a definite height; `container-type:
       inline-size` contains only the inline axis, so that height still comes
       from the ratio.
+
+      The stage is 5:4 rather than square because the cards are 4:3 and no
+      longer as tall as they are wide. A square stage left 94px of empty air
+      above and below the front card; 5:4 leaves 43, which is margin rather
+      than a gap, and takes 102px off the height of the hero.
 
       Three numbers set the whole composition, and each is a share of the stage:
 
@@ -468,10 +495,10 @@ function Ring({
         tenth — enough separation that the subject is obvious, not so much that
         the flanks distort into a fisheye.
 
-      The tightest constraint is vertical, and it is the business cards: they
-      are the one 1:1 photograph, so the front card is as tall as it is wide.
-      58 × 1.30 × 1.12 is 84% of the stage, which leaves 40px of air top and
-      bottom at the container's cap — the float uses 10 of them.
+      The vertical check is the front card against the stage: 58 × 1.30 × 1.12
+      is 84% of the stage's width, and at 4:3 that is 63% of its width in
+      height — 321px against a 407px stage at the container's cap, so 43px of
+      air top and bottom. The float uses 10 of them.
 
       Below `lg` the card grows and the ring tightens: a phone has a third of
       the width, and the desktop numbers there put the flanking cards off the
@@ -479,8 +506,8 @@ function Ring({
     */
     <div
       className={cn(
-        'relative aspect-square w-full select-none',
-        '[--ring-card:64cqw] [--ring-radius:42cqw] [--ring-camera:200cqw]',
+        'relative aspect-[5/4] w-full select-none',
+        '[--ring-card:60cqw] [--ring-radius:42cqw] [--ring-camera:200cqw]',
         'lg:[--ring-card:58cqw] lg:[--ring-radius:41cqw] lg:[--ring-camera:180cqw]',
         tilting && 'cursor-grab active:cursor-grabbing',
       )}
@@ -654,7 +681,7 @@ function RingCard({
                 'group-hover/card:shadow-[0_4px_8px_rgba(38,34,54,0.07),0_26px_50px_-20px_rgba(38,34,54,0.32),0_60px_110px_-45px_rgba(38,34,54,0.36)]',
               )}
             >
-              <span className={MOUNT.window} style={{ aspectRatio: item.aspect }}>
+              <span className={MOUNT.window} style={{ aspectRatio: CARD_RATIO }}>
                 <Image
                   src={item.image.src}
                   alt=""
@@ -662,7 +689,7 @@ function RingCard({
                   draggable={false}
                   {...loadingProps(index)}
                   sizes="(min-width: 1024px) 30vw, 80vw"
-                  className="object-cover"
+                  className="object-contain"
                 />
 
                 {/* A raking sheen across the stock. The one thing that says
