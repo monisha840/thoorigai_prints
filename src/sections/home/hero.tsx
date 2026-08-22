@@ -40,15 +40,21 @@ import { Eyebrow, editorialButton } from './shared';
 export function Hero() {
   return (
     /*
-      Top padding is 128px from `sm` up, not 176px.
+      Top padding is a flat 112px, not 176px growing to 176px.
 
       The navbar is fixed and 73px tall, so 176px of section padding left a
       103px void between the two — and pushed the CTAs to y=932 on a 1366×768
       screen, which is 164px below the fold. The buttons are the only thing in
       this section a visitor can act on; they do not belong below the fold on a
-      laptop. 128px clears the navbar by 55px, which is air rather than a gap.
+      laptop. 112px clears the navbar by 39px, which is air rather than a void,
+      and it is the same at every width — the hero has no more room to spare on
+      a large screen than on a small one, so there was never a reason for the
+      padding to grow with the viewport.
+
+      The last 16px of it is what puts the buttons above the fold at 1280×720,
+      which missed by five pixels at 128px.
     */
-    <section className="paper-grain relative overflow-hidden bg-paper-200 pt-28 pb-[4.5rem] sm:pt-32 lg:pb-[7.5rem]">
+    <section className="paper-grain relative overflow-hidden bg-paper-200 pt-28 pb-[4.5rem] lg:pb-[7.5rem]">
       {/* The mark's motif, at watermark strength behind the headline. */}
       <FeatherWatermark
         tilt={-16}
@@ -83,13 +89,13 @@ export function Hero() {
             {/*
               No `max-w` here. It carried `max-w-[20ch]` for most of this file's
               life, which never once applied: `ch` is the advance of "0" in
-              Fraunces, and 20 of them at the display-xl clamp's 92px ceiling is
+              Fraunces, and 20 of them at the display-xl clamp's ceiling is
               roughly 1050px against a grid column of about 624px. The column
               was always the binding constraint. Its only effect was to look
               like the thing controlling the line breaks, which sent the first
               investigation of the missing word in the wrong direction.
             */}
-            <h1 className="mt-6 font-display text-display-xl font-normal text-ink-800">
+            <h1 className="mt-5 font-display text-display-xl font-normal text-ink-800">
               {hero.headline.map((line, i) => (
                 <Reveal key={line} immediate delay={i * 0.1}>
                   {line}
@@ -97,7 +103,7 @@ export function Hero() {
               ))}
             </h1>
 
-            <FadeUp immediate delay={0.34} className="mt-8">
+            <FadeUp immediate delay={0.34} className="mt-6">
               <p className="max-w-[68ch] text-body-lg text-ink-500">{hero.standfirst}</p>
             </FadeUp>
 

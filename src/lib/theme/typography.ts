@@ -50,7 +50,7 @@ export const lineHeight = {
  */
 export const fontSize = {
   'display-2xl': { size: 'clamp(3rem, 10vw, 7.5rem)', lineHeight: lineHeight.none, letterSpacing: letterSpacing.tighter },
-  'display-xl': { size: 'clamp(2.75rem, 8vw, 5.75rem)', lineHeight: lineHeight.tight, letterSpacing: letterSpacing.tighter },
+  'display-xl': { size: 'clamp(2.75rem, 6.5vw, 4.5rem)', lineHeight: lineHeight.tight, letterSpacing: letterSpacing.tighter },
   'display-lg': { size: 'clamp(2.25rem, 5.5vw, 4.25rem)', lineHeight: lineHeight.tight, letterSpacing: letterSpacing.tight },
   'display-md': { size: 'clamp(1.875rem, 4vw, 3.25rem)', lineHeight: lineHeight.snug, letterSpacing: letterSpacing.tight },
   'display-sm': { size: 'clamp(1.625rem, 3vw, 2.375rem)', lineHeight: lineHeight.snug, letterSpacing: letterSpacing.tight },

@@ -110,7 +110,21 @@
   --text-display-2xl--line-height: 1;
   --text-display-2xl--letter-spacing: -0.04em;
 
-  --text-display-xl: clamp(2.75rem, 8vw, 5.75rem);
+  /*
+   * The ceiling is 72px, not 92px, and the growth rate is 6.5vw, not 8vw.
+   *
+   * At 92px this line held a hero H1 in a six-column grid, which on a 1366×768
+   * laptop meant a 511px headline — and 768px of viewport cannot carry a 511px
+   * headline plus a navbar, an eyebrow, a standfirst and the only two buttons in
+   * the section. The CTAs sat 164px below the fold.
+   *
+   * 72px keeps four lines at 311px, which fits with room to spare at 1366 and
+   * just fits at 1280×720. The 6.5vw rate holds the cap off until ~1108px so
+   * tablet sizes, where the layout is a single column and the headline has the
+   * whole container, are barely touched. The 44px floor is unchanged, so phones
+   * render exactly as before.
+   */
+  --text-display-xl: clamp(2.75rem, 6.5vw, 4.5rem);
   --text-display-xl--line-height: 1.08;
   --text-display-xl--letter-spacing: -0.04em;
 
