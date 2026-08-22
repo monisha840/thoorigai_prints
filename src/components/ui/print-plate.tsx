@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 
+import { PlateParallax } from '@/components/ui/plate-parallax';
 import type { WorkImage } from '@/lib/images';
 import { cn } from '@/lib/utils';
 
@@ -70,6 +71,16 @@ export interface PrintPlateProps {
   overlay?: ReactNode;
   /** Disable the hover lift where the plate is not interactive. */
   still?: boolean;
+  /**
+   * Let the photograph lean toward the pointer inside its own frame.
+   *
+   * Opt-in, and deliberately so. It is the one thing on this component that
+   * needs the client, and a catalogue page renders dozens of plates - paying
+   * for a pointer field on every thumbnail to move it four pixels is not a
+   * trade worth making. Reserve it for the large feature plates, where the
+   * photograph is big enough for the depth to be felt.
+   */
+  parallax?: boolean;
   className?: string;
   imageClassName?: string;
 }
@@ -84,6 +95,7 @@ export function PrintPlate({
   marks = false,
   overlay,
   still = false,
+  parallax = false,
   className,
   imageClassName,
 }: PrintPlateProps) {
@@ -114,20 +126,25 @@ export function PrintPlate({
         className,
       )}
     >
-      <Image
-        src={image.src}
-        alt={image.alt}
-        fill
-        sizes={sizes}
-        priority={priority}
-        className={cn(
-          'object-cover',
-          // A slow, small push-in. Large enough to feel responsive, small
-          // enough that the crop never visibly changes.
-          !still && 'motion-zoom group-hover:scale-[1.04]',
-          imageClassName,
-        )}
-      />
+      {/* A server component rendering a client one, with the photograph passed
+          through as a child: the image is still rendered on the server, and
+          only the pointer field ships. */}
+      <MaybeParallax on={parallax}>
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes={sizes}
+          priority={priority}
+          className={cn(
+            'object-cover',
+            // A slow, small push-in. Large enough to feel responsive, small
+            // enough that the crop never visibly changes.
+            !still && 'motion-zoom group-hover:scale-[1.04]',
+            imageClassName,
+          )}
+        />
+      </MaybeParallax>
 
       {/* Seats the product on the matte instead of letting it float. */}
       <span
@@ -159,6 +176,11 @@ export function PrintPlate({
       {overlay}
     </div>
   );
+}
+
+/** The pointer field, or nothing at all. Keeps the branch out of the markup. */
+function MaybeParallax({ on, children }: { on: boolean; children: ReactNode }) {
+  return on ? <PlateParallax>{children}</PlateParallax> : children;
 }
 
 /** Crop marks, borrowed from the placeholder so the house language survives. */

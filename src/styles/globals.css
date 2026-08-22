@@ -797,3 +797,160 @@
   transform: none !important;
   clip-path: none !important;
 }
+
+/* -----------------------------------------------------------------------
+ * The pointer
+ *
+ * A registration dot under the hand and a small stack of sheets trailing it.
+ * The component in `components/cursor/paper-cursor.tsx` owns the motion; this
+ * owns the shape.
+ *
+ * The split is by frequency. Position and tilt change every frame, so they are
+ * motion values written straight to the DOM by Framer. The fan changes when the
+ * pointer crosses into something interactive and at no other time, so it is a
+ * data attribute and a CSS transition - which costs nothing per frame and is
+ * interpolated by the compositor rather than by the main thread.
+ *
+ * Nothing here applies until the component sets `data-cursor` on `<html>`,
+ * which it only does on a device with a real pointer and only when motion is
+ * allowed. A visitor whose JavaScript never arrives keeps the ordinary arrow.
+ * --------------------------------------------------------------------- */
+
+/*
+ * The `*` is deliberate and unavoidable: `cursor` inherits, but every link and
+ * button in the design system sets `cursor: pointer` of its own, and a rule on
+ * `html` alone loses to all of them. One static rule under one attribute is the
+ * cheapest way to outrank them without touching every component.
+ */
+html[data-cursor='paper'],
+html[data-cursor='paper'] * {
+  cursor: none;
+}
+
+.pc-root {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--d-base) var(--ease-standard);
+}
+
+.pc-root[data-visible] {
+  opacity: 1;
+}
+
+/*
+ * Both movers are positioned by `transform` alone and centred by margin rather
+ * than by a second translate — Framer builds `transform` from `x`/`y`, so a
+ * `translate(-50%, -50%)` on the same element would be overwritten on the first
+ * frame.
+ */
+.pc-dot,
+.pc-follow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.pc-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 9999px;
+  background: var(--color-ink-800);
+  /* A paper ring, so the dot survives the dark bands. On paper it disappears
+     into the page; on ink it is the only thing keeping the dot visible. */
+  box-shadow: 0 0 0 1.5px rgb(251 251 249 / 0.9);
+}
+
+/*
+ * The stage carries the camera. It needs a real box for `perspective-origin` to
+ * mean anything: on the zero-sized point that positions it, the origin would
+ * sit at the corner of the sheets and every rotation would read as a shear.
+ *
+ * The offset is what makes this a follower rather than a badge stuck to the
+ * dot — the stack rides just below and right of the tip, where a sheet being
+ * carried would be.
+ */
+.pc-stage {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  width: 26px;
+  height: 34px;
+  perspective: 420px;
+}
+
+.pc-sheets {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.pc-sheet {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background: var(--color-paper-50);
+  border: 1px solid rgb(38 34 54 / 0.12);
+  /* Low and wide. A cursor-sized element cannot carry a cursor-sized shadow
+     without turning into a smudge. */
+  box-shadow: 0 1px 2px rgb(38 34 54 / 0.1), 0 6px 14px -8px rgb(38 34 54 / 0.35);
+}
+
+/*
+ * The front sheet is the reference plane; the two behind step back in Z and
+ * slide out from under it. `[data-open]` is the fanned state, set when the
+ * pointer is over something interactive.
+ *
+ * A transition rather than a spring, deliberately. The fan changes when the
+ * pointer crosses a boundary and at no other time, so there is nothing for
+ * JavaScript to compute on the frames in between - the compositor interpolates
+ * two transforms and the main thread stays out of it entirely.
+ */
+.pc-sheet {
+  transition:
+    transform var(--d-slow) var(--ease-standard),
+    opacity var(--d-slow) var(--ease-standard);
+}
+
+.pc-sheet:nth-child(2) {
+  transform: translate3d(-2px, 2px, -7px) rotate(-2deg);
+  opacity: 0.86;
+}
+
+.pc-sheet:nth-child(3) {
+  transform: translate3d(-4px, 4px, -14px) rotate(-4deg);
+  opacity: 0.7;
+}
+
+.pc-sheets[data-open] .pc-sheet:nth-child(2) {
+  transform: translate3d(-5px, 5px, -14px) rotate(-5deg);
+  opacity: 0.92;
+}
+
+.pc-sheets[data-open] .pc-sheet:nth-child(3) {
+  transform: translate3d(-10px, 10px, -28px) rotate(-10deg);
+  opacity: 0.8;
+}
+
+/*
+ * The third brake (§9.4). The component already declines to mount under
+ * reduced motion; this is the guarantee that holds even if it somehow does.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .pc-root {
+    display: none;
+  }
+
+  html[data-cursor='paper'],
+  html[data-cursor='paper'] * {
+    cursor: auto;
+  }
+}
+
+[data-motion-preference='reduced'] .pc-root {
+  display: none;
+}

@@ -201,6 +201,7 @@ function FormatFeature({
                 sizes="(min-width: 1280px) 62vw, (min-width: 1024px) 60vw, 100vw"
                 tone={product.image.ground === 'dark' ? 'ink' : 'paper'}
                 marks
+                parallax
               />
             ) : null}
           </div>

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import '@/styles/globals.css';
 
+import { PaperCursor } from '@/components/cursor/paper-cursor';
 import { Footer } from '@/components/layout/footer';
 import { MobileActionBar } from '@/components/layout/mobile-action-bar';
 import { Navbar } from '@/components/layout/navbar';
@@ -157,6 +158,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
           {/* Below `lg`, the enquiry channels follow the visitor down the page. */}
           <MobileActionBar />
+
+          {/* The registration dot and the sheets that trail it. Renders nothing
+              at all without `(hover: hover) and (pointer: fine)`, so a phone
+              never pays for it, and nothing under reduced motion. Last in the
+              tree because it is an overlay, and inside the providers because it
+              reads the motion preference. */}
+          <PaperCursor />
         </AppProviders>
       </body>
     </html>

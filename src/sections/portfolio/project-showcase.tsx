@@ -108,6 +108,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
               sizes="(min-width: 1280px) 62vw, (min-width: 1024px) 60vw, 100vw"
               tone={project.image.ground === 'dark' ? 'ink' : 'paper'}
               marks
+              parallax
             />
           </div>
         </Parallax>
