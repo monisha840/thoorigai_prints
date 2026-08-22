@@ -517,7 +517,7 @@ export function auditSchema(): string[] {
     if (serialised.includes(`"${social.href}"`)) {
       problems.push(
         `${social.label} URL "${social.href}" reached sameAs. Placeholder profile ` +
-          'links assert the wrong entity — set a real profile URL in site.ts or drop it.',
+          'links assert the wrong entity - set a real profile URL in site.ts or drop it.',
       );
     }
   }

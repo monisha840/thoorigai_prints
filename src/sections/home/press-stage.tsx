@@ -426,7 +426,7 @@ function Marker({ module }: { module: (typeof technology.modules)[number] }) {
         )}
       >
         {module.n}
-        <span className="sr-only"> — {module.label}</span>
+        <span className="sr-only"> - {module.label}</span>
       </button>
 
       {/*

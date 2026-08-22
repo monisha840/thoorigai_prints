@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   title: {
     // Applied to `/` only — Next uses the template for child segments.
     default: home.absoluteTitle!,
-    template: `%s — ${siteConfig.name}`,
+    template: `%s - ${siteConfig.name}`,
   },
   description: home.description,
   applicationName: siteConfig.name,

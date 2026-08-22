@@ -57,7 +57,7 @@ export function PortfolioCta() {
 
             <FadeUp delay={0.16} className="mt-6">
               <p className="measure text-body-lg text-paper-100/70">
-                Point us at the piece and tell us what should change &mdash; the stock, the size,
+                Point us at the piece and tell us what should change - the stock, the size,
                 the finish, the run. Matching an existing job is the fastest route to an accurate
                 quote.
               </p>

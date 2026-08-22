@@ -32,10 +32,10 @@ export const hero = {
    * ("We do Micro Text Variable Data Printing" / "All types of Customised
    * Personalised Printing available"), neither of which named Chennai.
    */
-  headline: ['Printing, packaging', 'and binding —', 'under one roof.'],
+  headline: ['Printing, packaging', 'and binding -', 'under one roof.'],
   /** 26 words. Every fact is from the audit. */
   standfirst:
-    'Digital and offset printing, rigid-box packaging and hard-case binding, produced in Royapettah since 2017 — proofed before press and finished in the same building.',
+    'Digital and offset printing, rigid-box packaging and hard-case binding, produced in Royapettah since 2017 - proofed before press and finished in the same building.',
   image: {
     src: '/img/hero/hard-case-board-binding.jpg',
     alt: 'A board-on-board hard case binding, photographed square-on against white',
@@ -205,7 +205,7 @@ export const pillars: readonly Pillar[] = [
   {
     name: 'Packaging',
     href: '/services#packaging',
-    lead: 'Rigid boxes, cartons, corrugated outers and paper bags — structured, printed and finished to the product.',
+    lead: 'Rigid boxes, cartons, corrugated outers and paper bags - structured, printed and finished to the product.',
     covers: ['Rigid boxes', 'Carton boxes', 'Corrugated', 'Paper bags'],
     image: {
       src: '/img/pillars/packaging-carton-range.webp',
@@ -303,7 +303,7 @@ export const featuredProducts: readonly CatalogueItem[] = [
     description: 'Telescope lids, drawer style, hinged lids and magnetic closures, wrapped and lined.',
     image: {
       src: '/img/catalogue/rigid-boxes.webp',
-      alt: 'Four rigid box constructions — drawer, sleeve, perforated and patterned',
+      alt: 'Four rigid box constructions - drawer, sleeve, perforated and patterned',
       width: 980,
       height: 799,
     },
@@ -458,7 +458,7 @@ export const whyUs = {
     },
     {
       title: 'Affordable price',
-      body: 'Best price guaranteed for every size of business — small scale to big brands.',
+      body: 'Best price guaranteed for every size of business - small scale to big brands.',
     },
   ],
 } as const;
@@ -500,7 +500,7 @@ export const technology = {
   /** The live H2, split so the first word can take the foil treatment. */
   heading: { foil: 'Technology', rest: 'we possess' },
   standfirst:
-    'A Canon production press, run in-house in Royapettah. Your file is proofed, printed and finished without the job leaving the building — which is why a correction costs a conversation rather than a week.',
+    'A Canon production press, run in-house in Royapettah. Your file is proofed, printed and finished without the job leaving the building - which is why a correction costs a conversation rather than a week.',
   image: {
     src: '/images/about/digital-printer.webp',
     alt: 'The studio’s Canon production press: paper decks at the right, print engine at the centre, finishing and stacking modules at the left',
@@ -590,7 +590,7 @@ export const processSteps = [
   {
     n: '02',
     title: 'Quote & artwork',
-    body: 'A written quote against your specification. Send print-ready files, or let our team design it — most of our individual clients do.',
+    body: 'A written quote against your specification. Send print-ready files, or let our team design it - most of our individual clients do.',
   },
   {
     n: '03',
@@ -605,7 +605,7 @@ export const processSteps = [
   {
     n: '05',
     title: 'Finish & deliver',
-    body: 'Lamination, foiling, die-cutting and binding happen in the same building — so the job never waits on a third party between stages.',
+    body: 'Lamination, foiling, die-cutting and binding happen in the same building - so the job never waits on a third party between stages.',
   },
 ] as const;
 
@@ -638,7 +638,7 @@ export const clientTestimonials: readonly Testimonial[] = [];
 /** Verbatim from the live About page. The only attributable quote on the site. */
 export const founderQuote = {
   quote:
-    'We believe printing is more than just ink on paper — it is a powerful tool for communication, branding and impact.',
+    'We believe printing is more than just ink on paper - it is a powerful tool for communication, branding and impact.',
   name: 'Mr. R. Ambeth',
   role: 'Founder · quality control, then finishing and binding specialist',
 } as const;

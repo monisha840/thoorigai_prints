@@ -44,14 +44,14 @@ export function StudioStory() {
               formats without sending a single stage out of the building.
             </p>
             <p>
-              That matters more than it sounds. Most print problems are handover problems — a file
+              That matters more than it sounds. Most print problems are handover problems - a file
               that changed between prepress and plate, a finish that was specified for a different
               stock, a delivery date that slipped while a job sat in someone else&rsquo;s queue. Keeping
               every stage in one place removes the gaps where those failures live.
             </p>
             <p>
               What that looks like on the floor is two press processes, nine binding formats, and a
-              finishing line — foiling, spot UV, lamination, die-cutting — that never has to queue
+              finishing line - foiling, spot UV, lamination, die-cutting - that never has to queue
               behind another studio&rsquo;s work. A file that arrives on Monday can be preflighted,
               proofed, printed, bound, packed and counted without once leaving the building.
             </p>

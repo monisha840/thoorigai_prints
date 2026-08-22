@@ -194,7 +194,7 @@ export function QuoteForm({ className }: { className?: string }) {
           <h3 className="font-display text-heading-lg text-ink-800">Brief received</h3>
           <p className="measure mt-2 text-body-sm text-ink-500">
             {siteConfig.contact.responseTime} If it is urgent, call or message the studio and
-            quote your name — we will pull the brief up.
+            quote your name - we will pull the brief up.
           </p>
         </div>
 
@@ -237,7 +237,7 @@ export function QuoteForm({ className }: { className?: string }) {
             Send this straight to the studio
           </h3>
           <p className="measure mt-2 text-body-sm text-ink-600">
-            We could not deliver the form just now. Your brief is ready to send below — one tap
+            We could not deliver the form just now. Your brief is ready to send below - one tap
             and it goes through, nothing to retype.
           </p>
         </div>
@@ -415,7 +415,7 @@ export function QuoteForm({ className }: { className?: string }) {
           rows={5}
           defaultValue={defaultBrief}
           key={defaultBrief}
-          placeholder="Format, size, stock, finish — whatever you know so far."
+          placeholder="Format, size, stock, finish - whatever you know so far."
           className={cn(fieldStyles, 'resize-y')}
         />
         <p className="text-caption text-ink-400">
@@ -423,7 +423,7 @@ export function QuoteForm({ className }: { className?: string }) {
           <a
             href={toWhatsAppHref(
               siteConfig.contact.whatsapp ?? siteConfig.contact.phone,
-              'Hi Thoorigai Prints — sending artwork for a quote.',
+              'Hi Thoorigai Prints - sending artwork for a quote.',
             )}
             className="text-indigo-600 underline underline-offset-4 motion-tint hover:text-indigo-700"
           >

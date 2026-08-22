@@ -46,7 +46,7 @@ export const services: ServiceItem[] = [
     id: 'packaging',
     title: 'Packaging',
     summary:
-      'Corrugation, cartons, rigid boxes and paper bags — die-cut, laminated and assembled to a structure that survives transit.',
+      'Corrugation, cartons, rigid boxes and paper bags - die-cut, laminated and assembled to a structure that survives transit.',
     specs: ['Corrugation & carton', 'Rigid & drawer boxes', 'Die-cut to spec'],
     icon: Box,
     href: '/services#packaging',
@@ -119,7 +119,7 @@ export const processSteps: ProcessStep[] = [
   { id: 'brief', title: 'Brief', body: 'Tell us the format, the quantity and the date. We will tell you what is possible and what it costs, before anything is committed.' },
   { id: 'prepress', title: 'Prepress', body: 'Artwork is preflighted, imposed and proofed. Bleed, overprint and colour build are checked while changes are still cheap.' },
   { id: 'press', title: 'Press', body: 'Digital for short runs, offset when the quantity earns it. Colour is signed off against the proof at the start of the run.' },
-  { id: 'finish', title: 'Finish', body: 'Lamination, foiling, die-cutting and binding, all in house — so the job never leaves the building between stages.' },
+  { id: 'finish', title: 'Finish', body: 'Lamination, foiling, die-cutting and binding, all in house - so the job never leaves the building between stages.' },
   { id: 'deliver', title: 'Deliver', body: 'Checked, counted, packed and dispatched. Short runs collected from Royapettah, larger jobs delivered.' },
 ];
 

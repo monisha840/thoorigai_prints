@@ -41,7 +41,7 @@ export default function ServicesPage() {
       <CtaSection
         eyebrow="Not sure which process"
         title="Send the job. We will tell you how to run it."
-        description="Quantity, stock and finish decide whether a job belongs on the digital press or the offset line. Describe what you need and we will pick — and say so if neither is right."
+        description="Quantity, stock and finish decide whether a job belongs on the digital press or the offset line. Describe what you need and we will pick - and say so if neither is right."
       />
     </>
   );

@@ -76,7 +76,7 @@ export const pageSeo: Record<string, PageSeo> = {
     // 148 chars.
     description:
       'Digital and offset printing, packaging and binding, produced under one roof in Royapettah, Chennai since 2017. Proofed before press. Request a quote.',
-    ogTitle: 'Thoorigai Prints — a printing house, not a print shop',
+    ogTitle: 'Thoorigai Prints - a printing house, not a print shop',
     ogDescription:
       'Printing, packaging and binding under one roof in Royapettah, Chennai. Digital for the deadline, offset when the quantity earns it.',
     ogImageAlt:
@@ -94,10 +94,10 @@ export const pageSeo: Record<string, PageSeo> = {
     title: 'Digital & Offset Printing Services',
     // 147 chars.
     description:
-      'Digital printing for short runs, offset for long ones, plus packaging, binding, prepress and scanning — six disciplines run in one Chennai building.',
+      'Digital printing for short runs, offset for long ones, plus packaging, binding, prepress and scanning - six disciplines run in one Chennai building.',
     ogTitle: 'Six printing disciplines, one building',
     ogDescription:
-      'Digital and offset presses, packaging, binding, prepress and scanning — so a job never waits on a third party and never gets lost between them.',
+      'Digital and offset presses, packaging, binding, prepress and scanning - so a job never waits on a third party and never gets lost between them.',
     ogImageAlt: 'A digital press laying down full-colour sheets on the Thoorigai Prints floor',
     breadcrumb: 'Services',
     lastModified: '2026-08-21',
@@ -114,10 +114,10 @@ export const pageSeo: Record<string, PageSeo> = {
     title: 'Business Cards, Brochures & Boxes',
     // 149 chars.
     description:
-      'Business cards, brochures, books, rigid and carton boxes, paper bags, certificates and labels — printed and finished to your specification in Chennai.',
+      'Business cards, brochures, books, rigid and carton boxes, paper bags, certificates and labels - printed and finished to your specification in Chennai.',
     ogTitle: 'What comes off the press',
     ogDescription:
-      'Business cards, brochures, books, rigid boxes, paper bags and certificates — every format made to your dimensions, stock and finish.',
+      'Business cards, brochures, books, rigid boxes, paper bags and certificates - every format made to your dimensions, stock and finish.',
     ogImageAlt:
       'A dozen printed carton, rigid box and paper bag formats arranged together',
     breadcrumb: 'Products',
@@ -133,12 +133,12 @@ export const pageSeo: Record<string, PageSeo> = {
     title: 'Printing & Packaging Portfolio',
     // 152 chars.
     description:
-      'Selected printing, packaging and binding work from our Chennai floor, photographed as delivered — with the stock, process and finish noted on every piece.',
+      'Selected printing, packaging and binding work from our Chennai floor, photographed as delivered - with the stock, process and finish noted on every piece.',
     ogTitle: 'Work, as it left the building',
     ogDescription:
-      'Photographed as delivered — no renders, no mock-ups. Each entry notes the process, the stock and the finish.',
+      'Photographed as delivered - no renders, no mock-ups. Each entry notes the process, the stock and the finish.',
     ogImageAlt:
-      'Four rigid box constructions photographed as delivered — drawer, sleeve, perforated and patterned',
+      'Four rigid box constructions photographed as delivered - drawer, sleeve, perforated and patterned',
     breadcrumb: 'Portfolio',
     lastModified: '2026-08-21',
     schemaType: 'CollectionPage',
@@ -154,7 +154,7 @@ export const pageSeo: Record<string, PageSeo> = {
     title: 'About Our Chennai Printing Press',
     // 144 chars.
     description:
-      'Thoorigai Prints has printed, finished and bound from Royapettah, Chennai since 2017 — every stage under one roof, nothing sent to a third party.',
+      'Thoorigai Prints has printed, finished and bound from Royapettah, Chennai since 2017 - every stage under one roof, nothing sent to a third party.',
     ogTitle: 'Chennai, since 2017',
     ogDescription:
       'A press floor in Royapettah that prints, finishes and binds without sending a single stage somewhere else.',
@@ -172,10 +172,10 @@ export const pageSeo: Record<string, PageSeo> = {
     title: 'Get a Printing Quote in Chennai',
     // 138 chars.
     description:
-      'Request a printing, packaging or binding quote from our Royapettah studio. Send the format, quantity and date — by form, phone or WhatsApp.',
+      'Request a printing, packaging or binding quote from our Royapettah studio. Send the format, quantity and date - by form, phone or WhatsApp.',
     ogTitle: 'Tell us what you need printed',
     ogDescription:
-      'Send the format, the quantity and the date you need it by. You will get a real answer — including when we are not the right press for the job.',
+      'Send the format, the quantity and the date you need it by. You will get a real answer - including when we are not the right press for the job.',
     ogImageAlt:
       'The Thoorigai Prints studio entrance on Nayar Vardha Pillai Street, Royapettah',
     breadcrumb: 'Contact',
@@ -193,10 +193,10 @@ export const pageSeo: Record<string, PageSeo> = {
     title: 'Printing Questions, Answered',
     // 150 chars.
     description:
-      'Turnarounds, minimum quantities, binding formats, artwork checks and studio visits — the questions Chennai print buyers ask us most, answered plainly.',
+      'Turnarounds, minimum quantities, binding formats, artwork checks and studio visits - the questions Chennai print buyers ask us most, answered plainly.',
     ogTitle: 'The questions we get asked most',
     ogDescription:
-      'Digital or offset, how fast, what sizes, what happens when the design changes — answered in the studio’s own words, with nothing invented.',
+      'Digital or offset, how fast, what sizes, what happens when the design changes - answered in the studio’s own words, with nothing invented.',
     ogImageAlt:
       'A press sheet being checked against its proof on the Thoorigai Prints floor',
     breadcrumb: 'FAQ',
@@ -303,7 +303,7 @@ export function seoFor(route: string): PageSeo {
   const entry = pageSeo[route];
   if (!entry) {
     throw new Error(
-      `No SEO record for "${route}". Add one to src/lib/seo/pages.ts — a route ` +
+      `No SEO record for "${route}". Add one to src/lib/seo/pages.ts - a route ` +
         'without a title and description should never reach production.',
     );
   }
@@ -336,13 +336,13 @@ export function assertLengths(): string[] {
   const descriptions = new Map<string, string>();
 
   for (const entry of Object.values(pageSeo)) {
-    const rendered = entry.absoluteTitle ?? `${entry.title} — Thoorigai Prints`;
+    const rendered = entry.absoluteTitle ?? `${entry.title} - Thoorigai Prints`;
     const length = entry.absoluteTitle
       ? entry.absoluteTitle.length
       : (entry.title?.length ?? 0) + BRAND_SUFFIX_LENGTH;
 
     if (length > TITLE_MAX) {
-      problems.push(`${entry.route}: title is ${length} chars (max ${TITLE_MAX}) — "${rendered}"`);
+      problems.push(`${entry.route}: title is ${length} chars (max ${TITLE_MAX}) - "${rendered}"`);
     }
     if (entry.description.length > DESCRIPTION_MAX) {
       problems.push(
@@ -351,7 +351,7 @@ export function assertLengths(): string[] {
     }
     if (entry.description.length < DESCRIPTION_MIN) {
       problems.push(
-        `${entry.route}: description is ${entry.description.length} chars (min ${DESCRIPTION_MIN}) — ` +
+        `${entry.route}: description is ${entry.description.length} chars (min ${DESCRIPTION_MIN}) - ` +
           'short descriptions get rewritten by Google',
       );
     }

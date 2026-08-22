@@ -52,7 +52,7 @@ export interface CtaSectionProps {
 export function CtaSection({
   eyebrow = 'Get started',
   title = 'Tell us what you need printed.',
-  description = 'Send the format, the quantity and the date you need it by. You will get a real answer — including when we are not the right press for the job.',
+  description = 'Send the format, the quantity and the date you need it by. You will get a real answer - including when we are not the right press for the job.',
 }: CtaSectionProps) {
   return (
     <Section tone="ink" spacing="lg" divided className="relative isolate overflow-hidden">

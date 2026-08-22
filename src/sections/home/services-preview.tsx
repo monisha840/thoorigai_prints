@@ -68,7 +68,7 @@ export function ServicesPreview() {
         id="services-heading"
         eyebrow="What we run"
         heading="Three disciplines, one building"
-        standfirst="Print, package and bind are the three things this business does, and it does all of them itself — so a job never waits on a third party between stages, and nothing gets lost in the hand-off."
+        standfirst="Print, package and bind are the three things this business does, and it does all of them itself - so a job never waits on a third party between stages, and nothing gets lost in the hand-off."
       />
 
       {/*
@@ -93,7 +93,7 @@ export function ServicesPreview() {
       <div className="mt-20 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-paper-400 pt-8 lg:mt-28">
         <Eyebrow rule={false}>Also</Eyebrow>
         <p className="text-body-md text-ink-500">
-          Foiling, spot UV, embossing and lamination are done in house —{' '}
+          Foiling, spot UV, embossing and lamination are done in house -{' '}
           <Link
             href="/portfolio#gallery"
             className="rounded-[2px] text-ink-800 underline decoration-gold-500/50 decoration-1 underline-offset-4 motion-tint hover:decoration-gold-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-indigo-500"

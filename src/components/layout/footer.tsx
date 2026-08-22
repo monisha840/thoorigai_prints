@@ -78,7 +78,7 @@ export function Footer() {
             <Link
               href="/"
               className="group inline-flex items-center"
-              aria-label={`${siteConfig.name} — home`}
+              aria-label={`${siteConfig.name} - home`}
             >
               <Image
                 src="/brand/logo-on-dark.png"

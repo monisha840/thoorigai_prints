@@ -11,6 +11,6 @@ export default function OpengraphImage() {
   return renderCard({
     eyebrow: OG_EYEBROW,
     lines: ['The questions', 'we get asked.'],
-    footnote: 'Turnarounds, sizes, binding, artwork and visits — answered plainly.',
+    footnote: 'Turnarounds, sizes, binding, artwork and visits - answered plainly.',
   });
 }

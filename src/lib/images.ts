@@ -68,7 +68,7 @@ export const images = {
     src: '/images/work/rigid-box-constructions.webp',
     width: 980,
     height: 799,
-    alt: 'Four rigid box constructions side by side — drawer, sleeve, perforated and patterned — on a warm off-white ground.',
+    alt: 'Four rigid box constructions side by side - drawer, sleeve, perforated and patterned - on a warm off-white ground.',
     ground: 'light',
   },
   patternedShoeBox: {
@@ -125,7 +125,7 @@ export const images = {
     src: '/images/work/studio-product-range.webp',
     width: 800,
     height: 510,
-    alt: 'The studio range staged together — diaries, rigid boxes, calendars, printed bags and bound books.',
+    alt: 'The studio range staged together - diaries, rigid boxes, calendars, printed bags and bound books.',
     ground: 'light',
   },
   magneticClosureBox: {
@@ -235,7 +235,7 @@ export const images = {
     src: '/images/work/disc-bound-components.webp',
     width: 800,
     height: 788,
-    alt: 'A flat lay of disc-bound components — cover, binding discs and index tabs laid out separately.',
+    alt: 'A flat lay of disc-bound components - cover, binding discs and index tabs laid out separately.',
     ground: 'light',
   },
   puLeatherDiaries: {

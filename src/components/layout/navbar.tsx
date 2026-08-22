@@ -65,7 +65,7 @@ export function Navbar() {
             <Link
               href="/"
               className="group flex shrink-0 items-center py-3"
-              aria-label={`${siteConfig.name} — home`}
+              aria-label={`${siteConfig.name} - home`}
             >
               {/* The lockup is the brand artwork recoloured to gold-600, the
                   token this wordmark already used for "Prints". Published gold

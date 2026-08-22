@@ -36,10 +36,10 @@ import { Eyebrow, bandDark, editorialButton } from './shared';
 const showcase = {
   eyebrow: 'Label & packaging',
   heading: 'Printed, laminated, and finished to the shelf.',
-  body: 'A wraparound label is the hardest thing a press is asked to do — flat colour that has to hold across a curve, small type that has to stay legible at 6pt, and a varnish that has to survive a cold shelf. This is the work the studio is built around.',
+  body: 'A wraparound label is the hardest thing a press is asked to do - flat colour that has to hold across a curve, small type that has to stay legible at 6pt, and a varnish that has to survive a cold shelf. This is the work the studio is built around.',
   image: {
     src: '/img/showcase/honey-label-jar.png',
-    alt: 'A honey jar with a full wraparound printed label — front panel, ingredients panel and nutrition panel',
+    alt: 'A honey jar with a full wraparound printed label - front panel, ingredients panel and nutrition panel',
     width: 1200,
     height: 1000,
   },

@@ -50,14 +50,14 @@ export const faqs: readonly FaqEntry[] = [
     question: 'I am an individual. Will you take my job?',
     answer:
       'Yes. Our clients include individuals, small-scale businesses and MSMEs as well as big brands.',
-    source: 'reassurances[0] — the studio’s own words, verbatim from the live site',
+    source: 'reassurances[0] - the studio’s own words, verbatim from the live site',
     href: '/contact#quote',
   },
   {
     id: 'digital-or-offset',
     question: 'Should my job run digital or offset?',
     answer:
-      'Quantity decides it. Digital suits one to about 3,000 sheets, variable data and same-week turnarounds. Offset earns its setup from roughly 1,000 sheets up, where unit cost matters and colour has to hold across the whole run. Send the quantity, the stock and the date and we will pick — and say so if neither is right for the job.',
+      'Quantity decides it. Digital suits one to about 3,000 sheets, variable data and same-week turnarounds. Offset earns its setup from roughly 1,000 sheets up, where unit cost matters and colour has to hold across the whole run. Send the quantity, the stock and the date and we will pick - and say so if neither is right for the job.',
     source: 'services digital/offset specs; /services closing CTA copy',
     href: '/services#offset',
   },
@@ -74,14 +74,14 @@ export const faqs: readonly FaqEntry[] = [
     question: 'Can you print an unusual size or an unusual design?',
     answer:
       'We can do all types of sizes for any design. Ask us and we will tell you what is possible.',
-    source: 'reassurances[1] — the studio’s own words, verbatim from the live site',
+    source: 'reassurances[1] - the studio’s own words, verbatim from the live site',
     href: '/products',
   },
   {
     id: 'binding',
     question: 'Which binding formats do you run?',
     answer:
-      'Nine, all in house: hard case, perfect binding, wiro, centre pin and the variants of each — plus lamination, foiling and spot UV on the same floor. Nothing is sent out for finishing.',
+      'Nine, all in house: hard case, perfect binding, wiro, centre pin and the variants of each - plus lamination, foiling and spot UV on the same floor. Nothing is sent out for finishing.',
     source: 'services binding summary and specs (9 binding formats)',
     href: '/services#binding',
   },
@@ -89,7 +89,7 @@ export const faqs: readonly FaqEntry[] = [
     id: 'packaging',
     question: 'Do you make packaging as well as print it?',
     answer:
-      'Yes. Corrugation, cartons, rigid boxes and paper bags — die-cut, laminated and assembled to a structure that survives transit, to your dimensions rather than to a stock size.',
+      'Yes. Corrugation, cartons, rigid boxes and paper bags - die-cut, laminated and assembled to a structure that survives transit, to your dimensions rather than to a stock size.',
     source: 'services packaging summary; /products catalogue entries',
     href: '/services#packaging',
   },
@@ -97,7 +97,7 @@ export const faqs: readonly FaqEntry[] = [
     id: 'artwork',
     question: 'Will you check my artwork before it goes to press?',
     answer:
-      'Always. Files are preflighted, imposed and proofed before anything reaches a plate — we catch the bleed, the overprint and the missing font while changes are still cheap. Colour is signed off against the proof at the start of the run.',
+      'Always. Files are preflighted, imposed and proofed before anything reaches a plate - we catch the bleed, the overprint and the missing font while changes are still cheap. Colour is signed off against the proof at the start of the run.',
     source: 'services prepress summary; processSteps prepress and press',
     href: '/services#prepress',
   },
@@ -106,14 +106,14 @@ export const faqs: readonly FaqEntry[] = [
     question: 'What happens if I need changes partway through?',
     answer:
       'There is no limit to creativity, so changes arise. We make them to suit the client and the product.',
-    source: 'reassurances[2] — the studio’s own words, verbatim from the live site',
+    source: 'reassurances[2] - the studio’s own words, verbatim from the live site',
     href: '/about#process',
   },
   {
     id: 'reprints',
     question: 'Can you reprint something you did not originally print?',
     answer:
-      'Usually. We run book scanning and print on demand for archives, reprints and out-of-stock titles that still need to be available — so a title with no surviving digital file is not automatically a dead end.',
+      'Usually. We run book scanning and print on demand for archives, reprints and out-of-stock titles that still need to be available - so a title with no surviving digital file is not automatically a dead end.',
     source: 'services scanning summary',
     href: '/services#scanning',
   },
@@ -129,7 +129,7 @@ export const faqs: readonly FaqEntry[] = [
     id: 'quote',
     question: 'How do I get a quote?',
     answer:
-      'Send the format, the quantity and the date you need it by — through the form, on WhatsApp, or by phone. You will get a real answer, including when we are not the right press for the job.',
+      'Send the format, the quantity and the date you need it by - through the form, on WhatsApp, or by phone. You will get a real answer, including when we are not the right press for the job.',
     source: '/contact page hero; CTA ladder in lib/navigation.ts',
     href: '/contact#quote',
   },

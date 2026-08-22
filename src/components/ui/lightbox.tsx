@@ -98,7 +98,7 @@ export function Lightbox({ slides, index, onClose, onNavigate }: LightboxProps) 
           key="lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label={`${slide.caption} — image ${index! + 1} of ${slides.length}`}
+          aria-label={`${slide.caption} - image ${index! + 1} of ${slides.length}`}
           variants={scrim}
           initial="hidden"
           animate="visible"

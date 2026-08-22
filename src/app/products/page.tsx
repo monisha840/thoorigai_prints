@@ -22,7 +22,7 @@ export default function ProductsPage() {
       <PageHero
         eyebrow="Products"
         title="What comes off the press."
-        lede="Formats we produce regularly, each to your dimensions, stock and finish. If it is not listed, ask — the list is what we run most, not what we can run."
+        lede="Formats we produce regularly, each to your dimensions, stock and finish. If it is not listed, ask - the list is what we run most, not what we can run."
         tags={['Publishing', 'Packaging', 'Retail', 'Identity', 'Institutional']}
         actions={
           <>

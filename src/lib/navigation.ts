@@ -10,7 +10,7 @@ export const mainNav: NavItem[] = [
   {
     label: 'Services',
     href: '/services',
-    description: 'Digital, offset, packaging and binding — what we run and how.',
+    description: 'Digital, offset, packaging and binding - what we run and how.',
   },
   {
     label: 'Products',
@@ -43,7 +43,7 @@ export const primaryCta = {
 export const whatsappCta = {
   label: 'WhatsApp us',
   /** Seeds the message so the studio gets context, not just a 'hi'. */
-  message: 'Hi Thoorigai Prints — I would like a quote for a print job.',
+  message: 'Hi Thoorigai Prints - I would like a quote for a print job.',
 } as const;
 
 /** Third rung: for the visitor who was always going to phone. */

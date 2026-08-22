@@ -206,7 +206,7 @@ const filterMeta: Record<FilterId, { label: string; note: string }> = {
   },
   packaging: {
     label: 'Packaging',
-    note: 'Rigid boxes, cartons and kraft builds — structure first, print second.',
+    note: 'Rigid boxes, cartons and kraft builds - structure first, print second.',
   },
   stationery: {
     label: 'Stationery',

@@ -36,7 +36,7 @@ export default function FaqPage() {
       <PageHero
         eyebrow="FAQ"
         title="Before you send the brief."
-        lede="The questions we are asked most, answered in the same words we would use on the phone. If yours is not here, ask — we would rather answer it than have you guess."
+        lede="The questions we are asked most, answered in the same words we would use on the phone. If yours is not here, ask - we would rather answer it than have you guess."
         tags={['Turnaround', 'Quantities', 'Binding', 'Artwork', 'Visits']}
         actions={
           <>
@@ -60,7 +60,7 @@ export default function FaqPage() {
       <CtaSection
         eyebrow="Still deciding"
         title="Ask the question that is not on the list."
-        description="Nobody at this studio is paid to talk you into the wrong process. Describe the job and you will get a straight answer about what it needs — and what it will cost."
+        description="Nobody at this studio is paid to talk you into the wrong process. Describe the job and you will get a straight answer about what it needs - and what it will cost."
       />
     </>
   );

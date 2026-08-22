@@ -162,7 +162,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
           */}
           {!project.clientCleared ? (
             <p className="mt-5 text-caption text-ink-300">
-              Client named on request &mdash; permission to publish pending.
+              Client named on request - permission to publish pending.
             </p>
           ) : null}
 

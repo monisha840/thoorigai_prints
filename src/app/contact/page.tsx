@@ -17,7 +17,7 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Tell us what you need printed."
-        lede="Send the format, the quantity and the date you need it by. You will get a real answer — including when we are not the right press for the job."
+        lede="Send the format, the quantity and the date you need it by. You will get a real answer - including when we are not the right press for the job."
         tags={['Quotes', 'Studio visits', 'Reprints', 'Sample requests']}
       />
 

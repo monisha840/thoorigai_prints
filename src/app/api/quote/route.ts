@@ -93,7 +93,7 @@ function format(enquiry: Enquiry): string {
 
 async function deliver(enquiry: Enquiry): Promise<boolean> {
   const body = format(enquiry);
-  const subject = `Quote request — ${enquiry.name}${enquiry.company ? ` (${enquiry.company})` : ''}`;
+  const subject = `Quote request - ${enquiry.name}${enquiry.company ? ` (${enquiry.company})` : ''}`;
   const results: boolean[] = [];
 
   const webhook = process.env.ENQUIRY_WEBHOOK_URL;
@@ -163,7 +163,7 @@ export async function POST(request: Request) {
   // Always log, whatever happened to the transports. If delivery is broken the
   // enquiry is still recoverable from the server logs.
   console.info(
-    delivered ? '[quote] delivered' : '[quote] NOT DELIVERED — no transport succeeded',
+    delivered ? '[quote] delivered' : '[quote] NOT DELIVERED - no transport succeeded',
     format(enquiry).replace(/\n/g, ' | '),
   );
 

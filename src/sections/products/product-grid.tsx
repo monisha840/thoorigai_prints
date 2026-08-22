@@ -81,7 +81,7 @@ export function ProductGrid() {
           level={2}
           size="display-lg"
           eyebrow="The catalogue"
-          description="Nine formats we produce week in, week out. Each one is made to your dimensions, on the stock and with the finish the job calls for — these are the shapes, not a fixed range."
+          description="Nine formats we produce week in, week out. Each one is made to your dimensions, on the stock and with the finish the job calls for - these are the shapes, not a fixed range."
           className="measure-tight"
         >
           Made to order, by format

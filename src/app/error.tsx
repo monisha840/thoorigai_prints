@@ -37,7 +37,7 @@ export default function Error({
           </h1>
 
           <p className="measure mt-6 text-body-lg text-ink-500">
-            The error has been logged. Try again — and if it keeps happening, call the studio and we
+            The error has been logged. Try again - and if it keeps happening, call the studio and we
             will sort it out directly.
           </p>
 

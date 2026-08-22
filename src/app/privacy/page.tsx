@@ -50,8 +50,8 @@ const clauses: readonly LegalClause[] = [
         </p>
         <p>
           It does not cover anything you send us by post, or a conversation on the studio floor.
-          Those are governed by the same principle — we use what you tell us to quote and produce
-          your job, and for nothing else — but this document is about the website.
+          Those are governed by the same principle - we use what you tell us to quote and produce
+          your job, and for nothing else - but this document is about the website.
         </p>
       </>
     ),
@@ -95,7 +95,7 @@ const clauses: readonly LegalClause[] = [
         </p>
         <p>
           If we later want to use your job as an example of our work, we will ask you first, in
-          writing. Nothing is published — no client name, no photograph of your job — without that
+          writing. Nothing is published - no client name, no photograph of your job - without that
           permission.
         </p>
       </>
@@ -151,7 +151,7 @@ const clauses: readonly LegalClause[] = [
         </p>
         <p>
           Enquiries that become jobs are kept as part of the job record, because a reprint is only
-          possible if the original specification still exists — and because tax and accounting rules
+          possible if the original specification still exists - and because tax and accounting rules
           require the commercial record to be retained.
         </p>
         <p>

@@ -56,7 +56,7 @@ export const legacyRedirects: LegacyRedirect[] = [
   {
     source: '/corrugation-box',
     destination: '/products#corrugation',
-    note: 'Format, not process — the catalogue answers this, /services does not.',
+    note: 'Format, not process - the catalogue answers this, /services does not.',
   },
   { source: '/carton-box', destination: '/products#boxes' },
   { source: '/paper-bag', destination: '/products#bags' },

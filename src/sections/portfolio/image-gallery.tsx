@@ -42,7 +42,7 @@ export function ImageGallery() {
           level={2}
           size="display-lg"
           eyebrow="Formats & finishes"
-          description="Every construction, binding and finish we run in house. These are format samples rather than client jobs — the named work is above."
+          description="Every construction, binding and finish we run in house. These are format samples rather than client jobs - the named work is above."
           inverted
         >
           The range

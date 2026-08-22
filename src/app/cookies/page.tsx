@@ -52,7 +52,7 @@ const clauses: readonly LegalClause[] = [
     body: (
       <>
         <p>
-          <strong>tp:reduce-motion</strong> — a <em>local storage</em> entry, not a cookie. It is
+          <strong>tp:reduce-motion</strong> - a <em>local storage</em> entry, not a cookie. It is
           written only when you use the animation switch at the foot of the page, and it holds a
           single character: whether you asked for reduced motion.
         </p>
@@ -74,14 +74,14 @@ const clauses: readonly LegalClause[] = [
       <>
         <p>There is no:</p>
         <ul>
-          <li>Analytics or measurement cookie — we do not count visitors</li>
+          <li>Analytics or measurement cookie - we do not count visitors</li>
           <li>Advertising or remarketing pixel</li>
           <li>Social network tracker or share widget</li>
           <li>Session identifier, because the site has no accounts to log in to</li>
           <li>Consent banner, because there is nothing to consent to</li>
         </ul>
         <p>
-          The quote form posts what you typed and stores nothing in your browser afterwards — not
+          The quote form posts what you typed and stores nothing in your browser afterwards - not
           even a draft.
         </p>
       </>
@@ -106,7 +106,7 @@ const clauses: readonly LegalClause[] = [
       <>
         <p>
           Switch the animation control back and the preference is rewritten. Clear your
-          browser&rsquo;s site data for this domain and it is removed entirely — the site then
+          browser&rsquo;s site data for this domain and it is removed entirely - the site then
           follows your operating system&rsquo;s own reduced-motion setting, which is what it does
           for a first-time visitor.
         </p>

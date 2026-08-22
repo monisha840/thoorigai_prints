@@ -57,7 +57,7 @@ const clauses: readonly LegalClause[] = [
       <>
         <p>
           Every job is quoted individually. Nothing on this site is a price list, and no page here
-          constitutes an offer — the quotation we send you does.
+          constitutes an offer - the quotation we send you does.
         </p>
         <p>
           A quotation is based on the specification you gave us: format, dimensions, stock,
@@ -78,8 +78,8 @@ const clauses: readonly LegalClause[] = [
     body: (
       <>
         <p>
-          You confirm that you own or are licensed to use everything in the files you send us —
-          images, typefaces, logos and copy — and that printing them does not infringe anyone
+          You confirm that you own or are licensed to use everything in the files you send us -
+          images, typefaces, logos and copy - and that printing them does not infringe anyone
           else&rsquo;s rights. We print what we are given; we are not in a position to verify the
           provenance of a file.
         </p>
@@ -102,7 +102,7 @@ const clauses: readonly LegalClause[] = [
       <>
         <p>
           Nothing goes to press without an approved proof. Once you have approved it, the approved
-          proof is the specification — a correction found after approval is a new job, and is
+          proof is the specification - a correction found after approval is a new job, and is
           charged as one.
         </p>
         <p>
@@ -137,7 +137,7 @@ const clauses: readonly LegalClause[] = [
       <p>
         Print runs are set up with allowance for make-ready, so the delivered quantity can come in
         slightly over or under the quantity ordered. Where the delivered quantity is a firm
-        requirement — a numbered certificate run, for instance — tell us before we quote and we will
+        requirement - a numbered certificate run, for instance - tell us before we quote and we will
         run to it.
       </p>
     ),
@@ -182,8 +182,8 @@ const clauses: readonly LegalClause[] = [
         </p>
         <p>
           Where a job is genuinely defective and it is our doing, we reprint it or credit it. That
-          is the remedy. We are not able to accept liability for indirect losses — a missed event, a
-          cancelled campaign, lost profit — that follow from a print fault.
+          is the remedy. We are not able to accept liability for indirect losses - a missed event, a
+          cancelled campaign, lost profit - that follow from a print fault.
         </p>
       </>
     ),
@@ -195,7 +195,7 @@ const clauses: readonly LegalClause[] = [
       <p>
         A job can be cancelled up to the point it goes to press, and you are charged for the work
         done and the materials committed up to that point. Once a run has started it cannot be
-        cancelled — printed sheets have no value to anyone but you.
+        cancelled - printed sheets have no value to anyone but you.
       </p>
     ),
   },
@@ -219,7 +219,7 @@ export default function TermsPage() {
       <PageHero
         eyebrow="Terms"
         title="How we work, in writing."
-        lede="Quotations, proofs, colour, quantity and delivery — the practices behind every job we take, set out plainly rather than buried in small print."
+        lede="Quotations, proofs, colour, quantity and delivery - the practices behind every job we take, set out plainly rather than buried in small print."
       />
 
       <LegalDocument
@@ -227,7 +227,7 @@ export default function TermsPage() {
         clauses={clauses}
         footnote={
           <>
-            If anything here is unclear before you place an order, ask — email{' '}
+            If anything here is unclear before you place an order, ask - email{' '}
             <a href={`mailto:${contact.email}`}>{contact.email}</a> or call{' '}
             <a href={`tel:${contact.phone.replace(/[^\d+]/g, '')}`}>{contact.phone}</a>. We would
             rather answer it now than argue about it later.

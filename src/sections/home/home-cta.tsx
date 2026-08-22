@@ -44,7 +44,7 @@ export function HomeCta() {
    */
   const waHref = whatsapp
     ? `https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(
-        "Hello Thoorigai Prints — I'd like a quote for a print job.",
+        "Hello Thoorigai Prints - I'd like a quote for a print job.",
       )}`
     : null;
 

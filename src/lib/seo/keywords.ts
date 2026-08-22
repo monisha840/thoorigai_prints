@@ -48,7 +48,7 @@ export const targetKeywords: Keyword[] = [
     term: 'printing services in Chennai',
     tier: 'primary',
     owner: '/',
-    evidence: 'audit: /printing/ — "All types of Customised Personalised Printing"',
+    evidence: 'audit: /printing/ - "All types of Customised Personalised Printing"',
   },
   {
     term: 'printing press Chennai',
@@ -250,7 +250,7 @@ export const unverified: UnverifiedKeyword[] = [
     term: 'sign board makers Chennai',
     tier: 'secondary',
     owner: '/services',
-    blockedOn: 'As above — capability unconfirmed.',
+    blockedOn: 'As above - capability unconfirmed.',
   },
   {
     term: 'acrylic and flex sign boards',

@@ -62,7 +62,7 @@ export function PortfolioHero() {
 
             <FadeUp immediate delay={0.16} className="mt-7">
               <p className="measure text-body-lg text-ink-500">
-                Photographed as delivered &mdash; no renders and no mock-ups. Each entry names the
+                Photographed as delivered - no renders and no mock-ups. Each entry names the
                 process, the stock and the finish, so you can judge whether it is the right
                 reference for your job.
               </p>
